@@ -14,6 +14,7 @@ import com.ming.smartpay.Fragment.mian.ThereFragemt;
 import com.ming.smartpay.Fragment.mian.TwoFragemt;
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.activity.MvpActivity;
+import com.ming.smartpay.base.permission.PermissionHelper;
 import com.ming.smartpay.presenter.MainPresenter;
 import com.ming.smartpay.view.MianView;
 
@@ -102,6 +103,7 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
 
             }
         });
+        PermissionHelper.reqCameraAndSDcard(MainActivity.this,null);
     }
 
 

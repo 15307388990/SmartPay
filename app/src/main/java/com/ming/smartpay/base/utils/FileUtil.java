@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 
 
 import com.ming.smartpay.appication.SmartpayApplication;
+import com.ming.smartpay.base.widget.ToastShow;
 import com.orhanobut.logger.Logger;
 
 import java.io.BufferedInputStream;
@@ -56,10 +57,8 @@ public class FileUtil {
     public static final String TAG = FileUtil.class.getSimpleName();
 
 
-
     //SD卡根路径
     public static final String SD_CARD_PATH = Environment.getExternalStorageDirectory().toString();
-
 
 
     //是否剪切
@@ -70,7 +69,9 @@ public class FileUtil {
     public static boolean DELETE_FLAG = false;
 
 
-    /** Regular expression for safe filenames: no spaces or metacharacters */
+    /**
+     * Regular expression for safe filenames: no spaces or metacharacters
+     */
     private static final Pattern SAFE_FILENAME_PATTERN = Pattern.compile("[\\w%+,./=_-]+");
 
 
@@ -87,15 +88,17 @@ public class FileUtil {
 
     /**
      * SD卡是否可以移除
+     *
      * @return
      */
-    public static boolean SDCardRemovable(){
+    public static boolean SDCardRemovable() {
         return Environment.isExternalStorageRemovable();
     }
 
 
     /**
      * 获取SD卡根目录路径
+     *
      * @return
      */
     public static String getSDCardPath() {
@@ -105,6 +108,7 @@ public class FileUtil {
 
     /**
      * 获取APP根目录路径
+     *
      * @param context
      * @return context.getFilesDir().getParent() + File.separator
      */
@@ -113,13 +117,12 @@ public class FileUtil {
     }
 
 
-
-
     /**
      * 获取项目根路径
      * SD卡存在：/storage/sdcard0/Android/data/<package包名>/
      * sd卡不存在: /data/data/<package包名>/
      * 如果获取的是手机内部目录的话
+     *
      * @param context
      * @param applicationDir
      * @return
@@ -127,17 +130,17 @@ public class FileUtil {
     public static String getRootPath(Context context, String applicationDir) {
         if (haveSDCard()) {
             String sdcardPath = getSDCardPath();
-            if(!TextUtil.isEmpty(applicationDir)){
+            if (!TextUtil.isEmpty(applicationDir)) {
                 sdcardPath = sdcardPath + File.separator + applicationDir + File.separator;
             }
-            Logger.t(TAG).d( "have sdcard! sdcard path: " + sdcardPath);
+            Logger.t(TAG).d("have sdcard! sdcard path: " + sdcardPath);
             return sdcardPath;
         } else {
             String dirPath = getAppPath(context);
-            if(!TextUtil.isEmpty(applicationDir)){
+            if (!TextUtil.isEmpty(applicationDir)) {
                 dirPath = dirPath + applicationDir + File.separator;
             }
-            Logger.t(TAG).d( "have no sdcard! dir path: " + dirPath);
+            Logger.t(TAG).d("have no sdcard! dir path: " + dirPath);
             return dirPath;
         }
     }
@@ -145,6 +148,7 @@ public class FileUtil {
 
     /**
      * 创建文件夹(默认首先在SdCard中创建文件夹，如SdCard不存在, 则在手机中创建文件夹)
+     *
      * @param path
      * @return String
      */
@@ -159,9 +163,9 @@ public class FileUtil {
                 files.mkdir();
             }
             return file;
-        }else {//SdCard卡不存在
+        } else {//SdCard卡不存在
             file = Environment.getRootDirectory().getPath() + path;
-            Logger.t(TAG).i("AppFileMgr-->>getRootFilePath-->>file:","创建文件夹的路径为" + file);
+            Logger.t(TAG).i("AppFileMgr-->>getRootFilePath-->>file:", "创建文件夹的路径为" + file);
             File files = new File(file);
             if (files == null || !files.exists()) {
                 files.mkdir();
@@ -173,31 +177,60 @@ public class FileUtil {
 
     /**
      * 获取磁盘的缓存目录,SD卡可用优先用SD卡的缓存目录
+     *
      * @param context
      * @return
      */
     public static String getDiskCacheDir(Context context) {
         String cachePath = null;
-        if ((haveSDCard()|| !SDCardRemovable())
+        if ((haveSDCard() || !SDCardRemovable())
                 && getExternalCacheDir(context) != null) {//SD卡可用就用外部缓存
             cachePath = getExternalCacheDir(context).getPath();
         } else {
             cachePath = getCacheDir(context).getPath();
         }
-        Logger.t(TAG).i("cachePath:"+cachePath);
+        Logger.t(TAG).i("cachePath:" + cachePath);
         return cachePath;
     }
 
-
+    /**
+     * 拷贝文件
+     *
+     * @param srcFile  源路径
+     * @param destFile 目标路径
+     * @return
+     */
+    public static boolean copyFolder(File srcFile, File destFile) {
+        if (!srcFile.isDirectory()) {
+            return false;
+        }
+        if (!destFile.exists() && !destFile.mkdirs()) {
+            return false;
+        }
+        boolean result = true;
+        File[] list = srcFile.listFiles();
+        if (list == null) {
+            return result;
+        }
+        for (File f : list) {
+            if (f.isDirectory()) {
+                result &= copyFolder(f, new File(destFile, f.getName()));
+            } else {
+                result &= copyFile(f, new File(destFile, f.getName()));
+            }
+        }
+        return result;
+    }
 
     /**
      * 获取内部的项目缓存目录
      * /data/data/<package包名>/cache
+     *
      * @param context
      * @return
      */
-    public static File getCacheDir(Context context){
-        Logger.t(TAG).i("内部缓存目录:"+context.getCacheDir().getPath());
+    public static File getCacheDir(Context context) {
+        Logger.t(TAG).i("内部缓存目录:" + context.getCacheDir().getPath());
         return context.getCacheDir();
     }
 
@@ -205,10 +238,11 @@ public class FileUtil {
     /**
      * 获取sd的项目缓存目录
      * /storage/sdcard0/Android/data/<package包名>/cache
+     *
      * @param context
      * @return
      */
-    public static File getExternalCacheDir(Context context){
+    public static File getExternalCacheDir(Context context) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return context.getExternalCacheDir();
         }
@@ -234,39 +268,41 @@ public class FileUtil {
 
     /**
      * 获取磁盘的文件缓存目录,SD卡可用优先用SD卡的文件缓存目录
+     *
      * @param context
      * @return
      */
     public static String getDiskFilesDir(Context context, String type) {
         String filesPath;
-        if ((haveSDCard()|| !SDCardRemovable())
-                && getExternalFilesDir(context,type) != null) {//SD卡可用就用外部缓存
-            filesPath = getExternalFilesDir(context,type).getPath();
+        if ((haveSDCard() || !SDCardRemovable())
+                && getExternalFilesDir(context, type) != null) {//SD卡可用就用外部缓存
+            filesPath = getExternalFilesDir(context, type).getPath();
         } else {
             filesPath = getFilesDir(context).getPath();
         }
-        Logger.t(TAG).i("cachePath:"+filesPath);
+        Logger.t(TAG).i("cachePath:" + filesPath);
         return filesPath;
     }
 
 
-
     /**
      * 获取项目的内部缓存目录路径
+     *
      * @param context
      * @return
      */
-    public static File getFilesDir(Context context){
-        Logger.t(TAG).i("内部缓存目录:"+context.getFilesDir().getPath());
+    public static File getFilesDir(Context context) {
+        Logger.t(TAG).i("内部缓存目录:" + context.getFilesDir().getPath());
         return context.getFilesDir();
     }
 
 
     /**
      * 获取指定文件大小
+     *
      * @param file
      * @return
-     * @throws Exception 　　
+     * @throws Exception
      */
     public static long getFileSize(File file) throws Exception {
         long size = 0;
@@ -287,28 +323,29 @@ public class FileUtil {
      * 需要权限
      * < uses-permission android:name ="android.permission.WRITE_EXTERNAL_STORAGE" />
      * < uses-permission android:name ="android.permissions.WRITE_EXTERNAL_STORAGE" />
+     *
      * @param context
-     * @param type 文件目录类型
-     * {@link Environment#DIRECTORY_MUSIC},//音乐
-     * {@link Environment#DIRECTORY_PODCASTS},//音频
-     * {@link Environment#DIRECTORY_RINGTONES},//铃声
-     * {@link Environment#DIRECTORY_ALARMS},   // 闹铃
-     * {@link Environment#DIRECTORY_NOTIFICATIONS},//通知铃声
-     * {@link Environment#DIRECTORY_PICTURES}, //图片
-     * {@link Environment#DIRECTORY_DCIM },     //相机拍摄照片和视频的标准目录
-     * {@link Environment#DIRECTORY_MOVIES},   //视频
-     * {@link Environment#DIRECTORY_DOCUMENTS},//文档
-     * {@link Environment#DIRECTORY_DOWNLOADS}.//下载路径
+     * @param type    文件目录类型
+     *                {@link Environment#DIRECTORY_MUSIC},//音乐
+     *                {@link Environment#DIRECTORY_PODCASTS},//音频
+     *                {@link Environment#DIRECTORY_RINGTONES},//铃声
+     *                {@link Environment#DIRECTORY_ALARMS},   // 闹铃
+     *                {@link Environment#DIRECTORY_NOTIFICATIONS},//通知铃声
+     *                {@link Environment#DIRECTORY_PICTURES}, //图片
+     *                {@link Environment#DIRECTORY_DCIM },     //相机拍摄照片和视频的标准目录
+     *                {@link Environment#DIRECTORY_MOVIES},   //视频
+     *                {@link Environment#DIRECTORY_DOCUMENTS},//文档
+     *                {@link Environment#DIRECTORY_DOWNLOADS}.//下载路径
      * @return
      */
-    public static File getExternalFilesDir(Context context, String type){
-        Logger.t(TAG).i("内部缓存目录:"+context.getExternalFilesDir(type).getPath());
+    public static File getExternalFilesDir(Context context, String type) {
+        Logger.t(TAG).i("内部缓存目录:" + context.getExternalFilesDir(type).getPath());
         File dir = context.getExternalFilesDir(type);
-        if(dir == null){
+        if (dir == null) {
             Logger.t(TAG).e("Directory不存在");
             return null;
         }
-        if(!dir.mkdirs()) {
+        if (!dir.mkdirs()) {
             Logger.t(TAG).e("Directory创建失败");
         }
         return dir;
@@ -317,19 +354,21 @@ public class FileUtil {
 
     /**
      * 获取外部音乐的路径
+     *
      * @param context
      * @return
      */
-    public static File getExternalMusicDir(Context context){
+    public static File getExternalMusicDir(Context context) {
         return getExternalFilesDir(context, Environment.DIRECTORY_MUSIC);
     }
 
     /**
      * 获取外部图片存放路径
+     *
      * @param context
      * @return
      */
-    public static File getExternalPictureDir(Context context){
+    public static File getExternalPictureDir(Context context) {
         return getExternalFilesDir(context, Environment.DIRECTORY_PICTURES);
     }
 
@@ -340,6 +379,7 @@ public class FileUtil {
      */
     /**
      * 获取拍照的外部图片存放路径
+     *
      * @return
      */
     public static File getStorageDCIMDir() {
@@ -349,6 +389,7 @@ public class FileUtil {
 
     /**
      * 获取拍照的外部图片存放路径
+     *
      * @return
      */
     public static File getStoragePicturesDir() {
@@ -356,9 +397,9 @@ public class FileUtil {
     }
 
 
-
     /**
      * 获取外部文档存放路径
+     *
      * @return
      */
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -369,6 +410,7 @@ public class FileUtil {
 
     /**
      * 获取外部下载路径
+     *
      * @return
      */
     public static File getStorageDownloadsDir() {
@@ -382,23 +424,21 @@ public class FileUtil {
      * @param type 这个方法接收一个参数，表明目录所放的文件的类型，传入的参数是Environment类中的DIRECTORY_XXX静态变量，比如DIRECTORY_DCIM等。
      * @return
      */
-    public static File getExternalStoragePublicDir(String type){
+    public static File getExternalStoragePublicDir(String type) {
         File dir = Environment.getExternalStoragePublicDirectory(type);
-        if(!dir.exists()){
-            if(!dir.mkdirs()){
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
                 Logger.t(TAG).e("内部缓存目录创建失败！");
             }
         }
-        Logger.t(TAG).i("内部缓存目录:"+dir.getPath());
+        Logger.t(TAG).i("内部缓存目录:" + dir.getPath());
         return dir;
     }
 
 
-
-
-
     /**
      * 在SD卡上创建文件
+     *
      * @param fileRelativePath 相对路径
      * @throws IOException
      */
@@ -410,6 +450,7 @@ public class FileUtil {
 
     /**
      * 在SD卡上创建目录
+     *
      * @param dirRelativePath 相对路径
      * @param dirRelativePath
      */
@@ -422,24 +463,24 @@ public class FileUtil {
 
     /**
      * 获取一个文件对象，如果不存在，则自动创建
+     *
      * @param parentDir
      * @param dirPath
      * @return
      */
     public static File getDirAutoCreated(String parentDir, String dirPath) {
-        File dirFile = new File(parentDir,dirPath);
+        File dirFile = new File(parentDir, dirPath);
         if (dirFile.isFile()) {
-            Logger.t(TAG).e( "[getDirAutoCreated]file[" + dirPath + "] is file!");
+            Logger.t(TAG).e("[getDirAutoCreated]file[" + dirPath + "] is file!");
             return dirFile;
         }
         if (!dirFile.exists()) {
-            if(!dirFile.mkdirs()){
-                Logger.t(TAG).e( "[getDirAutoCreated]file[" + dirPath + "] create error !");
+            if (!dirFile.mkdirs()) {
+                Logger.t(TAG).e("[getDirAutoCreated]file[" + dirPath + "] create error !");
             }
         }
         return dirFile;
     }
-
 
 
     /**
@@ -464,7 +505,7 @@ public class FileUtil {
         try {
             file.createNewFile();
         } catch (IOException e) {
-            Logger.t(TAG).e(e,e.getMessage());
+            Logger.t(TAG).e(e, e.getMessage());
         }
         return file;
     }
@@ -478,7 +519,7 @@ public class FileUtil {
     public static File getDirAutoCreated(String dirPath) {
         File dirFile = new File(dirPath);
         if (dirFile.isFile()) {
-            Logger.t(TAG).e( "[getDirAutoCreated]file[" + dirPath + "] is file!");
+            Logger.t(TAG).e("[getDirAutoCreated]file[" + dirPath + "] is file!");
             return dirFile;
         }
         if (!dirFile.exists()) {
@@ -488,10 +529,9 @@ public class FileUtil {
     }
 
 
-
-
     /**
      * 判断SD卡上的文件夹是否存在
+     *
      * @param relativePath 相对路径
      */
     public static boolean isFileExistInSDCard(String relativePath) {
@@ -502,14 +542,13 @@ public class FileUtil {
 
     /**
      * 文件夹是否存在
+     *
      * @param filePath 绝对路径
      */
     public static boolean isFileExist(String filePath) {
         File file = new File(filePath);
         return file.exists();
     }
-
-
 
 
     /**
@@ -547,7 +586,7 @@ public class FileUtil {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
                 String selection = MediaStore.Images.Media._ID + "=?";
-                String[] selectionArgs = new String[] { split[1] };
+                String[] selectionArgs = new String[]{split[1]};
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         } // MediaStore (and general)
@@ -566,6 +605,7 @@ public class FileUtil {
 
     /**
      * 通过本地多媒体库获取文件路径
+     *
      * @param context
      * @param uri
      * @param selection
@@ -574,7 +614,7 @@ public class FileUtil {
      */
     public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
             if (cursor != null && cursor.moveToFirst()) {
@@ -590,8 +630,7 @@ public class FileUtil {
 
 
     /**
-     * @param uri
-     *            The Uri to check.
+     * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
      */
     public static boolean isExternalStorageDocument(Uri uri) {
@@ -600,8 +639,7 @@ public class FileUtil {
 
 
     /**
-     * @param uri
-     *            The Uri to check.
+     * @param uri The Uri to check.
      * @return Whether the Uri authority is DownloadsProvider.
      */
     public static boolean isDownloadsDocument(Uri uri) {
@@ -610,8 +648,7 @@ public class FileUtil {
 
 
     /**
-     * @param uri
-     *            The Uri to check.
+     * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.
      */
     public static boolean isMediaDocument(Uri uri) {
@@ -619,8 +656,7 @@ public class FileUtil {
     }
 
     /**
-     * @param uri
-     *            The Uri to check.
+     * @param uri The Uri to check.
      * @return Whether the Uri authority is Google Photos.
      */
     public static boolean isGooglePhotosUri(Uri uri) {
@@ -629,7 +665,8 @@ public class FileUtil {
 
 
     /**
-     *  保存文件，压缩图片直到容量小于指定
+     * 保存文件，压缩图片直到容量小于指定
+     *
      * @param filePath 文件路径
      * @param bm       图片
      * @param capacity 质量 1~100
@@ -647,10 +684,6 @@ public class FileUtil {
         }
 
     }
-
-
-
-
 
 
     /**
@@ -718,13 +751,9 @@ public class FileUtil {
     }
 
 
-
-
-
-
-
     /**
      * 打开文件
+     *
      * @param context
      * @param path
      */
@@ -766,9 +795,9 @@ public class FileUtil {
     }
 
 
-
     /**
      * 批量删除文件
+     *
      * @param files
      */
     public static void deleteFile(File... files) {
@@ -777,7 +806,7 @@ public class FileUtil {
                 try {
                     file.delete();
                 } catch (RuntimeException ex) {
-                    Logger.t(TAG).e(ex,ex.getMessage());
+                    Logger.t(TAG).e(ex, ex.getMessage());
                 }
             }
         }
@@ -860,6 +889,7 @@ public class FileUtil {
 
     /**
      * InputStream转byte[]
+     *
      * @param in
      * @return
      * @throws Exception
@@ -876,6 +906,7 @@ public class FileUtil {
 
     /**
      * 把流写入文件中
+     *
      * @param file
      * @param ins
      * @return
@@ -896,6 +927,7 @@ public class FileUtil {
 
     /**
      * 流转化为字符串
+     *
      * @param is
      * @return
      */
@@ -913,7 +945,7 @@ public class FileUtil {
                 resultSb.append(len);
             }
         } catch (Exception ex) {
-            Logger.t(TAG).e( ex,ex.getMessage());
+            Logger.t(TAG).e(ex, ex.getMessage());
         } finally {
             closeIO(is);
         }
@@ -921,16 +953,14 @@ public class FileUtil {
     }
 
 
-
-
-
     /**
      * 根据地址获取InputStream
+     *
      * @param urlStr
-     * @throws IOException
      * @return InputStream
+     * @throws IOException
      */
-    public InputStream getInputStreamByStringURL(String urlStr){
+    public InputStream getInputStreamByStringURL(String urlStr) {
         InputStream inputStream = null;
         try {
             URL url = new URL(urlStr);
@@ -938,19 +968,18 @@ public class FileUtil {
             inputStream = urlConnection.getInputStream();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            Logger.t(TAG).e("AppFileMgr-->>getInputStreamByStringURL:","根据地址获取InputStream失败！" + e.getMessage());
-        } catch (IOException e){
+            Logger.t(TAG).e("AppFileMgr-->>getInputStreamByStringURL:", "根据地址获取InputStream失败！" + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
-            Logger.t(TAG).e("AppFileMgr-->>getInputStreamByStringURL:","根据地址获取InputStream失败！" + e.getMessage());
+            Logger.t(TAG).e("AppFileMgr-->>getInputStreamByStringURL:", "根据地址获取InputStream失败！" + e.getMessage());
         }
         return inputStream;
     }
 
 
-
-
     /**
      * 文件转化为Object
+     *
      * @param fileName 文件全部路径
      * @return Object null 读取失败
      * 实现序列化的对象也可以写入本地
@@ -988,7 +1017,8 @@ public class FileUtil {
 
     /**
      * 把Object输出到文件
-     * @param obj 要保存的对象，可以是List<String>这种列表对象
+     *
+     * @param obj        要保存的对象，可以是List<String>这种列表对象
      * @param outputFile 输出文件的绝对路径
      */
     public static void object2File(Object obj, String outputFile) {
@@ -1019,7 +1049,6 @@ public class FileUtil {
     }
 
 
-
     /**
      * 从文件中读取文本
      *
@@ -1032,7 +1061,7 @@ public class FileUtil {
         try {
             is = new FileInputStream(filePath);
         } catch (Exception e) {
-            Logger.t(TAG).e( e,e.getMessage());
+            Logger.t(TAG).e(e, e.getMessage());
         }
         return inputStream2String(is);
     }
@@ -1044,36 +1073,38 @@ public class FileUtil {
 
     /**
      * 将文本写入到指定目录的文件中，如果文件不存在则自动创建
+     *
      * @param file
      * @param content
      * @return
      */
     public static int writeFile(File file, String content) {
-        return writeFile(file.getPath(), content,false);
+        return writeFile(file.getPath(), content, false);
     }
 
 
     /**
      * 将流写入到指定目录的文件中，如果文件不存在则自动创建
+     *
      * @param file
      * @param stream
      * @return 写入成功返回true
      */
     public static boolean writeFile(File file, InputStream stream) {
-        return writeFile(file, stream,false);
+        return writeFile(file, stream, false);
     }
-
 
 
     /**
      * 写文本到指定目录的文件中（不存在自动创建文件）
+     *
      * @param path
      * @param content
-     * @param append 如果是true,内容拼接到文件后面
+     * @param append  如果是true,内容拼接到文件后面
      * @return
      */
     public static int writeFile(String path, String content, boolean append) {
-        if(TextUtil.isEmpty(content)) return -1;
+        if (TextUtil.isEmpty(content)) return -1;
 
         FileWriter fileWriter = null;
         try {
@@ -1082,7 +1113,7 @@ public class FileUtil {
             fileWriter.write(content);
             return 0;
         } catch (Exception e) {
-            Logger.t(TAG).e( e,e.getMessage());
+            Logger.t(TAG).e(e, e.getMessage());
         } finally {
             closeIO(fileWriter);
         }
@@ -1092,7 +1123,8 @@ public class FileUtil {
     /**
      * write file
      * 将输入流写入指定路径的文件中
-     * @param file the file to be opened for writing.
+     *
+     * @param file   the file to be opened for writing.
      * @param stream the input stream
      * @param append if <code>true</code>, then bytes will be written to the end of the file rather than the beginning
      * @return return true
@@ -1115,13 +1147,14 @@ public class FileUtil {
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred. ", e);
         } finally {
-            closeIO(o,stream);
+            closeIO(o, stream);
         }
     }
 
 
     /**
      * 获取手机内部可用空间大小
+     *
      * @return
      */
     static public long getAvailableInternalMemorySize() {
@@ -1131,8 +1164,10 @@ public class FileUtil {
         long availableBlocks = statFs.getAvailableBlocks();//获取当前可用的存储空间
         return availableBlocks * blockSize;
     }
+
     /**
      * 获取手机内部空间大小
+     *
      * @return
      */
     static public long getTotalInternalMemorySize() {
@@ -1142,8 +1177,10 @@ public class FileUtil {
         long totalBlocks = stat.getBlockCount();
         return totalBlocks * blockSize;
     }
+
     /**
      * 获取手机外部可用空间大小
+     *
      * @return
      */
     static public long getAvailableExternalMemorySize() {
@@ -1153,28 +1190,27 @@ public class FileUtil {
             long blockSize = stat.getBlockSize();
             long availableBlocks = stat.getAvailableBlocks();
             return availableBlocks * blockSize;
-        }else {
+        } else {
             return -1L;
         }
     }
 
 
-
-
     /**
      * 获取单个文件的大小or获取目录包括包含的文件的总大小
+     *
      * @param directory 文件获取目录
      * @return
      */
-    public static long getDirectorySize(File directory){
-        if(!directory.exists()) return 0;
-        if(directory.isDirectory()){
-            long directorySize=0;
-            for(File file:directory.listFiles()){
-                directorySize+=getDirectorySize(file);
+    public static long getDirectorySize(File directory) {
+        if (!directory.exists()) return 0;
+        if (directory.isDirectory()) {
+            long directorySize = 0;
+            for (File file : directory.listFiles()) {
+                directorySize += getDirectorySize(file);
             }
             return directorySize;
-        }else{
+        } else {
             return directory.length();
         }
     }
@@ -1182,17 +1218,18 @@ public class FileUtil {
 
     /**
      * 目录大小格式化(1024 -> 1k)
+     *
      * @param directorySize
      * @return
      */
     public static String formatFileSize(long directorySize) {
-        return Formatter.formatFileSize(SmartpayApplication.getInstance(),directorySize);
+        return Formatter.formatFileSize(SmartpayApplication.getInstance(), directorySize);
     }
-
 
 
     /**
      * 获取指定路径下的文件列表
+     *
      * @param strPath
      * @return
      */
@@ -1214,10 +1251,9 @@ public class FileUtil {
     }
 
 
-
-
     /**
      * 更新本地文件
+     *
      * @param context
      * @param path
      */
@@ -1228,10 +1264,10 @@ public class FileUtil {
         if (Build.VERSION.SDK_INT >= 19 /*Build.VERSION_CODES.KITKAT*/) { //添加此判断，判断SDK版本是不是4.4或者高于4.4
             String[] paths = new String[]{path};
 
-            if(paths == null)
-                 paths = new String[]{Environment.getExternalStorageDirectory().toString()};
+            if (paths == null)
+                paths = new String[]{Environment.getExternalStorageDirectory().toString()};
 
-            MediaScannerConnection.scanFile(context, paths,  null,null);
+            MediaScannerConnection.scanFile(context, paths, null, null);
         } else {
             final Intent intent;
             if (f.isDirectory()) {
@@ -1250,8 +1286,6 @@ public class FileUtil {
     }
 
 
-
-
     /**
      * 扫描目录（扫描后可以及时在图库中看到）
      *
@@ -1262,9 +1296,6 @@ public class FileUtil {
     public static void scanFile(Context context, String path) {
         MediaScannerConnection.scanFile(context, new String[]{path}, null, null);
     }
-
-
-
 
 
     /***
@@ -1288,36 +1319,39 @@ public class FileUtil {
      * @throws Exception 异常处理
      * @return falg = true 文件剪切成功。falg = false 文件剪切失败。
      */
-    public static boolean cutFile(File src, File desc, boolean boolCover, boolean boolCut){
+    public static boolean cutFile(File src, File desc, boolean boolCover, boolean boolCut) {
         try {
             //1:单文件剪切操作
-            if(src.isFile())
-            {
-                if(!desc.isFile() || boolCover)
+            if (src.isFile()) {
+                if (!desc.isFile() || boolCover)
                     //创建新文件
                     desc.createNewFile();
                 //进行复制操作
                 CUT_FLAG = copyFile(src, desc);
                 //是否是剪切操作
-                if(boolCut){ 	src.delete();	}
+                if (boolCut) {
+                    src.delete();
+                }
             }
             //2：多文件剪切操作
-            else if(src.isDirectory()) {
+            else if (src.isDirectory()) {
                 desc.mkdirs();
                 File[] list = src.listFiles();
                 //循环向目标目录写如内容
-                for(int i = 0; i < list.length; i++){
+                for (int i = 0; i < list.length; i++) {
                     String fileName = list[i].getAbsolutePath().substring(src.getAbsolutePath().length(), list[i].getAbsolutePath().length());
-                    File descFile = new File(desc.getAbsolutePath()+ fileName);
-                    cutFile(list[i],descFile, boolCover, boolCut);
+                    File descFile = new File(desc.getAbsolutePath() + fileName);
+                    cutFile(list[i], descFile, boolCover, boolCut);
                 }
                 //是否是剪切操作
-                if(boolCut)	{  	src.delete();	}
+                if (boolCut) {
+                    src.delete();
+                }
             }
         } catch (Exception e) {
             CUT_FLAG = false;
             e.printStackTrace();
-            Logger.t(TAG).e("AppFileMgr-->>cutFile:","文件剪切操作出现异常！" + e.getMessage());
+            Logger.t(TAG).e("AppFileMgr-->>cutFile:", "文件剪切操作出现异常！" + e.getMessage());
         }
         return CUT_FLAG;
     }
@@ -1341,75 +1375,64 @@ public class FileUtil {
      * @throws Exception 异常处理
      * @return falg = true 复制操作成功。falg = false 复制操作失败。
      */
-    public static boolean copyFile(File src, File desc){
+    public static boolean copyFile(File src, File desc) {
         //创建字节流对象(输入,输出)
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         //创建文件输入流,输入流对象
-        FileInputStream srcInputStream  = null;
-        FileOutputStream descOutputStream= null;
+        FileInputStream srcInputStream = null;
+        FileOutputStream descOutputStream = null;
         //记录同文件复制数量操作
         int count = 0;
         //是否存在相同文件
         boolean boolCover = false;
         //单文件复制操作实现
-        if(src.isFile()){
+        if (src.isFile()) {
             try {
                 //获取需要复制下目录列表文件数组
                 File[] list = desc.listFiles();
                 //获取复制文件名
-                String srcname = src.toString().substring(src.toString().lastIndexOf("\\")+1, src.toString().length()).trim();
-                if(null != list)
-                {
-                    if(list.length > 0)
-                    {
+                String srcname = src.toString().substring(src.toString().lastIndexOf("\\") + 1, src.toString().length()).trim();
+                if (null != list) {
+                    if (list.length > 0) {
                         //循环判断复制目录下是否和源文名相同
-                        for(int i = 0; i < list.length; i++)
-                        {
+                        for (int i = 0; i < list.length; i++) {
                             //获取复制目录下文件名
-                            String descname = list[i].toString().substring(list[i].toString().lastIndexOf("\\")+1, list[i].toString().length()).trim();
+                            String descname = list[i].toString().substring(list[i].toString().lastIndexOf("\\") + 1, list[i].toString().length()).trim();
                             //判定复制文件名和目录文件名相同，记录重复数为1
-                            if(srcname.equals(descname)){
+                            if (srcname.equals(descname)) {
                                 count = count + 1;
                                 boolCover = true;
                             }
-                            if(descname.indexOf("复件") != -1 && descname.indexOf(srcname.substring(srcname.indexOf(")")+1, srcname.length())) != -1){
+                            if (descname.indexOf("复件") != -1 && descname.indexOf(srcname.substring(srcname.indexOf(")") + 1, srcname.length())) != -1) {
                                 count = count + 1;
                             }
                         }
                     }
                 }
                 //存在重复文件信息
-                if(boolCover)
-                {
-                    if(count == 1)
-                    {
-                        if(desc.toString().indexOf(".") != -1)
-                        {
+                if (boolCover) {
+                    if (count == 1) {
+                        if (desc.toString().indexOf(".") != -1) {
                             //向磁盘中写入： 复件 + 复制文件名称
-                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 " );
-                        }else
-                        {
+                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 ");
+                        } else {
                             //向磁盘中写入： 复件 + 复制文件名称
                             descOutputStream = new FileOutputStream(desc.toString() + "\\复件 " + srcname);
                         }
-                    }else{
-                        if(desc.toString().indexOf(".") != -1)
-                        {
+                    } else {
+                        if (desc.toString().indexOf(".") != -1) {
                             //向磁盘中写入： 复件(记录数)+ 复制文件名称
-                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 ("+count+") ");
-                        }else
-                        {
+                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 (" + count + ") ");
+                        } else {
                             //向磁盘中写入： 复件(记录数)+ 复制文件名称
-                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 ("+count+") " + srcname);
+                            descOutputStream = new FileOutputStream(desc.toString() + "\\复件 (" + count + ") " + srcname);
                         }
                     }
-                }else{
-                    if(desc.toString().indexOf(".") != -1)
-                    {
-                        descOutputStream = new FileOutputStream(desc.toString() + "\\" );
-                    }else
-                    {
+                } else {
+                    if (desc.toString().indexOf(".") != -1) {
+                        descOutputStream = new FileOutputStream(desc.toString());
+                    } else {
                         descOutputStream = new FileOutputStream(desc.toString() + "\\" + srcname);
                     }
                 }
@@ -1417,7 +1440,7 @@ public class FileUtil {
                 srcInputStream = new FileInputStream(src);
                 bis = new BufferedInputStream(srcInputStream);
                 bos = new BufferedOutputStream(descOutputStream);
-                while(bis.read(buf) != -1){
+                while (bis.read(buf) != -1) {
                     bos.write(buf);
                     bos.flush();
                 }
@@ -1425,13 +1448,13 @@ public class FileUtil {
             } catch (Exception e) {
                 COPY_FLAG = false;
                 e.printStackTrace();
-                Logger.t(TAG).e("AppFileMgr-->>copyFile:","文件复制操作出现异常！" + e.getMessage());
-            }finally{
+                Logger.t(TAG).e("AppFileMgr-->>copyFile:", "文件复制操作出现异常！" + e.getMessage());
+            } finally {
                 try {
-                    if(bis != null){
+                    if (bis != null) {
                         bis.close();
                     }
-                    if(bos != null){
+                    if (bos != null) {
                         bos.close();
                     }
                 } catch (IOException e) {
@@ -1440,14 +1463,16 @@ public class FileUtil {
                     Logger.t(TAG).e("AppFileMgr-->>copyFile:", "文件复制操作，数据流关闭出现异常！" + e.getMessage());
                 }
             }
-        }else if(src.isDirectory()){
-            //创建目录
-            desc.mkdir();
+        } else if (src.isDirectory()) {
+            //创建目录\
+            if (!desc.exists()) {
+                desc.mkdirs();
+            }
             File[] list = src.listFiles();
             //循环向目标目录写如内容
-            for(int i = 0; i < list.length; i++){
+            for (int i = 0; i < list.length; i++) {
                 String fileName = list[i].getAbsolutePath().substring(src.getAbsolutePath().length(), list[i].getAbsolutePath().length());
-                File descFile = new File(desc.getAbsolutePath()+ fileName);
+                File descFile = new File(desc.getAbsolutePath() + fileName);
                 copyFile(list[i], descFile);
             }
         }
@@ -1455,25 +1480,21 @@ public class FileUtil {
     }
 
 
-
     /***
      * 用于对文件或文件夹进行删除操作
      * 1：删除文件     FileHelper.DeleteFile(new File("F:\\AAA\\A.txt"))   测试通过
      * 2：删除目录     FileHelper.DeleteFile(new File("F:\\AAA\\work"))    测试通过
      * @param file  删除文件对象
-     * @return  delete_falg为true删除文件/目录成功,为false删除文件/目录失败。
+     * @return delete_falg为true删除文件/目录成功,为false删除文件/目录失败。
      */
-    public static boolean deleteFile(File file){
+    public static boolean deleteFile(File file) {
         try {
-            if(file.isFile())
-            {
+            if (file.isFile()) {
                 file.delete();
-                DELETE_FLAG  = true;
-            }
-            else if(file.isDirectory())
-            {
+                DELETE_FLAG = true;
+            } else if (file.isDirectory()) {
                 File[] list = file.listFiles();
-                for(int i=0;i<list.length;i++){
+                for (int i = 0; i < list.length; i++) {
                     deleteFile(list[i]);
                 }
                 file.delete();
@@ -1487,23 +1508,21 @@ public class FileUtil {
     }
 
 
-
     /***
      * 用于对文件进行重命名操作
      * 1：重命名：FileHelper.RenameFile(new File("F:\\AAA\\A.txt"),"AA")  测试通过
      * @param file  重命名文件对象
      * @param name  命名文件名称
-     * @return  rename_falg为true重命名成功,为false重命名失败。
+     * @return rename_falg为true重命名成功, 为false重命名失败。
      */
-    public static boolean renameFile(File file, String name){
+    public static boolean renameFile(File file, String name) {
         String path = file.getParent();
-        if(!path.endsWith(File.separator)){
+        if (!path.endsWith(File.separator)) {
             path += File.separator;
         }
         Logger.t(TAG).i("AppFileMgr-->>renameFile:", "文件重命名操作成功！");
         return file.renameTo(new File(path + name));
     }
-
 
 
     /**
@@ -1517,13 +1536,9 @@ public class FileUtil {
     }
 
 
-
-
-
-
-
     /**
      * 获取文件名称
+     *
      * @param path
      * @return String
      */
@@ -1532,7 +1547,6 @@ public class FileUtil {
         Logger.t(TAG).i("AppFileMgr-->>getFileName-->>path:", path);
         return path.substring(index + 1);
     }
-
 
 
     /**
@@ -1586,7 +1600,8 @@ public class FileUtil {
     /**
      * Check if a filename is "safe" (no metacharacters or spaces).
      * 检验文件名是否合法（是否存在特殊字符或者空格）
-     * @param file  The file to check
+     *
+     * @param file The file to check
      */
     public static boolean isFilenameSafe(File file) {
         // Note, we check whether it matches what's known to be safe,
@@ -1598,6 +1613,7 @@ public class FileUtil {
 
     /**
      * 检验Ext4文件名的字符
+     *
      * @param c
      * @return
      */
@@ -1644,6 +1660,7 @@ public class FileUtil {
 
     /**
      * 检验FAT文件名的字符
+     *
      * @param c
      * @return
      */
@@ -1703,28 +1720,27 @@ public class FileUtil {
 
     /**
      * 修正文件名
+     *
      * @param res
      * @param maxBytes
      */
     private static void trimFilename(StringBuilder res, int maxBytes) {
         byte[] raw;
-            try {
-                raw = res.toString().getBytes("UTF-8");
-                if (raw.length > maxBytes) {
-                    maxBytes -= 3;
-                    while (raw.length > maxBytes) {
-                        res.deleteCharAt(res.length() / 2);
-                        raw = res.toString().getBytes("UTF-8");
-                    }
-                    res.insert(res.length() / 2, "...");
+        try {
+            raw = res.toString().getBytes("UTF-8");
+            if (raw.length > maxBytes) {
+                maxBytes -= 3;
+                while (raw.length > maxBytes) {
+                    res.deleteCharAt(res.length() / 2);
+                    raw = res.toString().getBytes("UTF-8");
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                res.insert(res.length() / 2, "...");
             }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
     }
-
-
 
 
     /**
@@ -1744,6 +1760,7 @@ public class FileUtil {
 
     /**
      * 获取文件类型
+     *
      * @param uri
      * @return
      */
@@ -1756,7 +1773,6 @@ public class FileUtil {
         }
         return type;
     }
-
 
 
     /**
@@ -1789,9 +1805,9 @@ public class FileUtil {
     }
 
 
-
     /**
      * 从assets中读取文本
+     *
      * @param name
      * @return
      */
@@ -1800,32 +1816,30 @@ public class FileUtil {
         try {
             is = context.getResources().getAssets().open(name);
         } catch (Exception e) {
-            Logger.t(TAG).e( e,e.getMessage());
+            Logger.t(TAG).e(e, e.getMessage());
         }
         return inputStream2String(is);
 
     }
 
 
-
-
     /**
      * 清空某个目录下的所有文件和文件夹
+     *
      * @param directory
      */
-    public static void clearDirectory(File directory){
-        if(directory.exists()&&directory.isDirectory()){
-            for(File file:directory.listFiles()){
-                if(file.exists()&&file.isFile()) {
+    public static void clearDirectory(File directory) {
+        if (directory.exists() && directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                if (file.exists() && file.isFile()) {
                     file.delete();
-                }else if(file.exists()&&file.isDirectory()){
+                } else if (file.exists() && file.isDirectory()) {
                     clearDirectory(file);
                     file.delete();
                 }
             }
         }
     }
-
 
 
     /**
@@ -1846,9 +1860,6 @@ public class FileUtil {
     }
 
 
-
-
-
     /**
      * 关闭流
      *
@@ -1865,7 +1876,7 @@ public class FileUtil {
                 }
                 cb.close();
             } catch (IOException e) {
-                Logger.t(TAG).e( "close IO ERROR...", e);
+                Logger.t(TAG).e("close IO ERROR...", e);
             }
         }
     }
