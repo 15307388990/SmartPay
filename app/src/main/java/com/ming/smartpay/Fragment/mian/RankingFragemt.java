@@ -4,19 +4,23 @@ import android.os.Bundle;
 
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.fragment.MvpFragment;
+import com.ming.smartpay.base.utils.AppUtils;
+import com.ming.smartpay.base.utils.StatusBarUtil;
 import com.ming.smartpay.presenter.HomePresenter;
 import com.ming.smartpay.view.HomeView;
 
-public class ThereFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
+public class RankingFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
-    public static ThereFragemt newInstance() {
-        return new ThereFragemt();
+    public static RankingFragemt newInstance() {
+        return new RankingFragemt();
     }
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         super.onCreateView(savedInstanceState);
         setContentView(R.layout.fragemt_there);
+        StatusBarUtil.setColor(getActivity(), AppUtils.getColor(R.color.white));
+        StatusBarUtil.setDarkMode(getActivity());
     }
 
     @Override

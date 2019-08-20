@@ -5,4 +5,11 @@
 
 
     <color name="bg_titleBar">#fff</color>
+    <color name="SM_6277FF">#6277FF</color>
+    <color name="SM_D8D8D8">#D8D8D8</color>
+    <color name="SM_999999">#999999</color>
+    <color name="SM_F0F0F0">#F0F0F0</color>
+    <color name="SM_626262">#626262</color>
+    <color name="SM_EEEEEE">#EEEEEE</color>
+    <color name="SM_9B9B9B">#9B9B9B</color>
 </resources>

@@ -10,11 +10,11 @@ import android.widget.RadioGroup;
 
 import com.ming.smartpay.Fragment.mian.HomeFragemt;
 import com.ming.smartpay.Fragment.mian.MyFragemt;
-import com.ming.smartpay.Fragment.mian.ThereFragemt;
-import com.ming.smartpay.Fragment.mian.TwoFragemt;
+import com.ming.smartpay.Fragment.mian.OrderFragemt;
+import com.ming.smartpay.Fragment.mian.CoreFragemt;
+import com.ming.smartpay.Fragment.mian.RankingFragemt;
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.activity.MvpActivity;
-import com.ming.smartpay.base.permission.PermissionHelper;
 import com.ming.smartpay.presenter.MainPresenter;
 import com.ming.smartpay.view.MianView;
 
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MainActivity extends MvpActivity<MianView, MainPresenter> {
 
@@ -37,6 +36,8 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
     RadioButton rb3;
     @BindView(R.id.rb_4)
     RadioButton rb4;
+    @BindView(R.id.rb_5)
+    RadioButton rb5;
     List<Fragment> fragmentList;
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
@@ -45,11 +46,16 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        initView();
+
+    }
+
+    private void initView() {
         fragmentList = new ArrayList<>();
         fragmentList.add(HomeFragemt.newInstance());
-        fragmentList.add(TwoFragemt.newInstance());
-        fragmentList.add(ThereFragemt.newInstance());
+        fragmentList.add(CoreFragemt.newInstance());
+        fragmentList.add(RankingFragemt.newInstance());
+        fragmentList.add(OrderFragemt.newInstance());
         fragmentList.add(MyFragemt.newInstance());
         viewPager.setAdapter(new MyfAdatper(getSupportFragmentManager(), fragmentList));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -72,6 +78,9 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
                         break;
                     case 3:
                         radioGroup.check(R.id.rb_4);
+                        break;
+                    case 4:
+                        radioGroup.check(R.id.rb_5);
                         break;
                 }
 
@@ -98,12 +107,15 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
                     case R.id.rb_4:
                         viewPager.setCurrentItem(3);
                         break;
+                    case R.id.rb_5:
+                        viewPager.setCurrentItem(4);
+                        break;
 
                 }
 
             }
         });
-        PermissionHelper.reqCameraAndSDcard(MainActivity.this,null);
+
     }
 
 

@@ -7,16 +7,16 @@ import com.ming.smartpay.base.fragment.MvpFragment;
 import com.ming.smartpay.presenter.HomePresenter;
 import com.ming.smartpay.view.HomeView;
 
-public class TwoFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
+public class CoreFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
-    public static TwoFragemt newInstance() {
-        return new TwoFragemt();
+    public static CoreFragemt newInstance() {
+        return new CoreFragemt();
     }
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         super.onCreateView(savedInstanceState);
-        setContentView(R.layout.fragemt_two);
+        setContentView(R.layout.fragemt_code);
     }
 
     @Override
