@@ -1,22 +1,37 @@
-package com.ming.smartpay.Fragment.mian;
+package com.ming.smartpay.fragment.mian;
+
 
 import android.os.Bundle;
 
+
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.fragment.MvpFragment;
+
+import com.ming.smartpay.base.utils.FileUtil;
+
 import com.ming.smartpay.presenter.HomePresenter;
-import com.ming.smartpay.view.HomeView;
+import com.ming.smartpay.view.modelview.HomeView;
 
-public class CoreFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
-    public static CoreFragemt newInstance() {
-        return new CoreFragemt();
+
+public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
+
+
+    public static HomeFragemt newInstance() {
+        return new HomeFragemt();
     }
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         super.onCreateView(savedInstanceState);
-        setContentView(R.layout.fragemt_code);
+        setContentView(R.layout.fragemt_home);
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -38,4 +53,10 @@ public class CoreFragemt extends MvpFragment<HomeView, HomePresenter> implements
     public void showError(String msg) {
 
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
 }

@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:background="@null"
+            android:inputType="phone"
             android:hint="请输入手机号码" />
     </LinearLayout>
 
@@ -55,16 +56,19 @@
             android:layout_marginLeft="12dp"
             android:layout_weight="1"
             android:background="@null"
+            android:inputType="textPassword"
             android:hint="请输入登录密码" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="38dp"
+            android:button="@null"
             android:background="@mipmap/login_btn_close" />
     </LinearLayout>
 
     <Button
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

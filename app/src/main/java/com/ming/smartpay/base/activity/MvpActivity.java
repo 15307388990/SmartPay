@@ -27,8 +27,6 @@ public abstract class MvpActivity<V extends MvpView, P extends MvpPresenter<V>>
         if (useEventBus()) {
             EventBus.getDefault().register(this);
         }
-        StatusBarUtil.setColor(this, AppUtils.getColor(R.color.white));
-        StatusBarUtil.setDarkMode(this);
         // 初始化presenter并绑定view
         mPresenter = createPresenter();
         mPresenter.attachView((V) this);

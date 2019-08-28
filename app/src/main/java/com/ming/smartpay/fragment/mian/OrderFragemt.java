@@ -1,11 +1,11 @@
-package com.ming.smartpay.Fragment.mian;
+package com.ming.smartpay.fragment.mian;
 
 import android.os.Bundle;
 
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.fragment.MvpFragment;
 import com.ming.smartpay.presenter.HomePresenter;
-import com.ming.smartpay.view.HomeView;
+import com.ming.smartpay.view.modelview.HomeView;
 
 public class OrderFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
@@ -16,7 +16,12 @@ public class OrderFragemt extends MvpFragment<HomeView, HomePresenter> implement
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         super.onCreateView(savedInstanceState);
-        setContentView(R.layout.fragemt_there);
+        setContentView(R.layout.fragemt_order);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -38,4 +43,10 @@ public class OrderFragemt extends MvpFragment<HomeView, HomePresenter> implement
     public void showError(String msg) {
 
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
 }

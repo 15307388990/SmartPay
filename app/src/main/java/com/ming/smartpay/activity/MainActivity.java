@@ -5,18 +5,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.ming.smartpay.Fragment.mian.HomeFragemt;
-import com.ming.smartpay.Fragment.mian.MyFragemt;
-import com.ming.smartpay.Fragment.mian.OrderFragemt;
-import com.ming.smartpay.Fragment.mian.CoreFragemt;
-import com.ming.smartpay.Fragment.mian.RankingFragemt;
+import com.ming.smartpay.fragment.mian.HomeFragemt;
+import com.ming.smartpay.fragment.mian.MyFragemt;
+import com.ming.smartpay.fragment.mian.OrderFragemt;
+import com.ming.smartpay.fragment.mian.CoreFragemt;
+import com.ming.smartpay.fragment.mian.RankingFragemt;
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.activity.MvpActivity;
+import com.ming.smartpay.base.utils.AppUtils;
+import com.ming.smartpay.base.utils.StatusBarUtil;
+import com.ming.smartpay.base.widget.ToastShow;
 import com.ming.smartpay.presenter.MainPresenter;
-import com.ming.smartpay.view.MianView;
+import com.ming.smartpay.view.modelview.MianView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +50,8 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
+        StatusBarUtil.setDarkMode(this);
         initView();
 
     }
@@ -69,18 +75,23 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
                 switch (i) {
                     case 0:
                         radioGroup.check(R.id.rb_1);
+                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
                         break;
                     case 1:
                         radioGroup.check(R.id.rb_2);
+                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
                         break;
                     case 2:
                         radioGroup.check(R.id.rb_3);
+                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
                         break;
                     case 3:
                         radioGroup.check(R.id.rb_4);
+                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
                         break;
                     case 4:
                         radioGroup.check(R.id.rb_5);
+                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
                         break;
                 }
 
@@ -156,5 +167,20 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
         public int getCount() {
             return fragmentList.size();
         }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            ToastShow.s("向走");
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            ToastShow.s("向右");
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
