@@ -161,6 +161,7 @@
         android:background="@color/SM_EEEEEE" />
 
     <LinearLayout
+        android:id="@+id/ll_change_login"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:background="@color/white"
@@ -190,6 +191,7 @@
         android:background="@color/SM_EEEEEE" />
 
     <LinearLayout
+        android:id="@+id/ll_change_pay"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:background="@color/white"

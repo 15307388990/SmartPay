@@ -1,10 +1,13 @@
 package com.ming.smartpay.fragment.mian;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ming.smartpay.R;
+import com.ming.smartpay.activity.ChangeLoginPasswordActivity;
+import com.ming.smartpay.activity.ChangePayPasswordActivity;
 import com.ming.smartpay.base.fragment.MvpFragment;
 import com.ming.smartpay.dialogfrment.VersionUpgradeDialog;
 import com.ming.smartpay.presenter.HomePresenter;
@@ -16,6 +19,10 @@ public class MyFragemt extends MvpFragment<HomeView, HomePresenter> implements H
 
     @BindView(R.id.ll_check_update)
     LinearLayout llCheckUpdate;
+    @BindView(R.id.ll_change_login)
+    LinearLayout llChangeLogin;
+    @BindView(R.id.ll_change_pay)
+    LinearLayout llChangePay;
 
     public static MyFragemt newInstance() {
         return new MyFragemt();
@@ -34,6 +41,20 @@ public class MyFragemt extends MvpFragment<HomeView, HomePresenter> implements H
             @Override
             public void onClick(View v) {
                 VersionUpgradeDialog.newInstance().show(getActivity());
+            }
+        });
+        llChangeLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChangeLoginPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+        llChangePay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 Intent intent=new Intent(getActivity(), ChangePayPasswordActivity.class);
+                 startActivity(intent);
             }
         });
     }

@@ -5,9 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.ming.smartpay.base.widget.TitleBar
-        android:id="@+id/titleBar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"/>
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
+        <com.ming.smartpay.base.widget.TitleBar
+            android:id="@+id/titleBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </LinearLayout>
 </LinearLayout>
