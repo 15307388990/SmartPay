@@ -72,12 +72,6 @@ public class BaseActivity extends BasePermissionAty {
             mTitleBar.setVisibility(View.GONE);
         }
         View childView = inflater.inflate(layoutId, null);
-//        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-//        DisplayMetrics dm = new DisplayMetrics();
-//        wm.getDefaultDisplay().getMetrics(dm);
-//        int width = dm.widthPixels;         // 屏幕宽度（像素）
-//        int height = dm.heightPixels;       // 屏幕高度（像素）
-//        mViewContainer.addView(childView,width,height);
         mViewContainer.addView(childView);
         mUnbinder = ButterKnife.bind(this);
     }

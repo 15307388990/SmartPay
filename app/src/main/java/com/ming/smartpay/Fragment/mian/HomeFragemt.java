@@ -1,28 +1,39 @@
-package com.ming.smartpay.Fragment.mian;
+package com.ming.smartpay.fragment.mian;
 
-import android.content.Context;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.ming.smartpay.R;
+import com.ming.smartpay.activity.StationActivity;
+import com.ming.smartpay.adapter.HomeAdapter;
 import com.ming.smartpay.base.fragment.MvpFragment;
-import com.ming.smartpay.base.utils.FileUtil;
+import com.ming.smartpay.bean.ProjectTab;
+import com.ming.smartpay.dialogfrment.AddProjectDialog;
 import com.ming.smartpay.presenter.HomePresenter;
-import com.ming.smartpay.view.HomeView;
+import com.ming.smartpay.view.WiperSwitch;
+import com.ming.smartpay.view.modelview.HomeView;
 
-import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 
-public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
-    @BindView(R.id.button)
-    Button button;
-    private static String SRC = "system/extMedia/FujiApp/content/movie/";
-    // 目的路径 当然也可以通过获取调用API的方式来获取 这里我就直接定义了
-    private static String DST = FileUtil.getSDCardPath() + "/FujiApp/content/movie/";
-    private static String FLAG = "extMedia";
+public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView, BaseQuickAdapter.OnItemClickListener,HomeAdapter.OnChangedListener {
+
+
+    @BindView(R.id.recyclerview)
+    RecyclerView recyclerview;
+    @BindView(R.id.ll_add)
+    TextView llAdd;
+
+    private List<ProjectTab> projectTabs;
 
     public static HomeFragemt newInstance() {
         return new HomeFragemt();
@@ -32,18 +43,19 @@ public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements
     protected void onCreateView(Bundle savedInstanceState) {
         super.onCreateView(savedInstanceState);
         setContentView(R.layout.fragemt_home);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSharedPreferences(FLAG, Context.MODE_PRIVATE);
-                new Thread() {
-                    @Override
-                    public void run() {
-                        copyMedia(SRC, DST);
-                    }
-                }.start();
-            }
-        });
+
+
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.showDate();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -71,10 +83,41 @@ public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements
         super.onDestroyView();
     }
 
-    private boolean copyMedia(String src, String dst) {
-        if (!FileUtil.copyFile(new File(src), new File(dst))) {
-            return false;
-        }
-        return true;
+    @Override
+    public void showData(List<ProjectTab> projectTabs) {
+        this.projectTabs = projectTabs;
+        recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
+        HomeAdapter homeAdapter = new HomeAdapter(projectTabs,this);
+        homeAdapter.setOnItemClickListener(this);
+        recyclerview.setAdapter(homeAdapter);
+        llAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddProjectDialog.newInstance().setOnClickListener(new AddProjectDialog.OnClickListener() {
+                    @Override
+                    public void successful(String name) {
+
+                        mPresenter.AddProject(name);
+                    }
+                }).show(getActivity());
+            }
+        });
+
+    }
+
+
+    @Override
+    public void OnChanged(WiperSwitch wiperSwitch, boolean checkState, int position) {
+        mPresenter.UpdateAll(projectTabs.get(position).getObjectId(),checkState);
+
+    }
+
+    @Override
+    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+        ProjectTab projectTab = projectTabs.get(position);
+        Intent intent = new Intent(getActivity(), StationActivity.class);
+        intent.putExtra(StationActivity.PROJECTID, projectTab.getObjectId());
+        intent.putExtra(StationActivity.PROJECTNAME, projectTab.getPrijectName());
+        startActivity(intent);
     }
 }

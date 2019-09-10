@@ -20,19 +20,18 @@ import java.util.List;
  * created at 2019/8/27 6:09 PM
  */
 
-public class RankingAdapter extends BaseQuickAdapter<RankingBean> {
+public class RankingAdapter extends BaseQuickAdapter<RankingBean,BaseViewHolder> {
 
 
-    public RankingAdapter(Context context, List<RankingBean> data) {
-        super(context, R.layout.ranking_item, data);
+    public RankingAdapter(List<RankingBean> data) {
+        super(R.layout.ranking_item, data);
     }
 
     @Override
     protected void convert(BaseViewHolder baseViewHolder, RankingBean rankingBean) {
         baseViewHolder.setText(R.id.tv_id, rankingBean.getId())
                 .setText(R.id.tv_ranking, rankingBean.getRanking())
-                .setText(R.id.tv_results, rankingBean.getResults())
-                .setImageUrl(R.id.iv_img, rankingBean.getImgurl());
+                .setText(R.id.tv_results, rankingBean.getResults());
 
     }
 }

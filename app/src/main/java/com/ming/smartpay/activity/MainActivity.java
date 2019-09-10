@@ -50,7 +50,7 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
+        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
         StatusBarUtil.setDarkMode(this);
         initView();
 
@@ -59,49 +59,49 @@ public class MainActivity extends MvpActivity<MianView, MainPresenter> {
     private void initView() {
         fragmentList = new ArrayList<>();
         fragmentList.add(HomeFragemt.newInstance());
-        fragmentList.add(CoreFragemt.newInstance());
-        fragmentList.add(RankingFragemt.newInstance());
-        fragmentList.add(OrderFragemt.newInstance());
-        fragmentList.add(MyFragemt.newInstance());
+//        fragmentList.add(CoreFragemt.newInstance());
+//        fragmentList.add(RankingFragemt.newInstance());
+//        fragmentList.add(OrderFragemt.newInstance());
+//        fragmentList.add(MyFragemt.newInstance());
         viewPager.setAdapter(new MyfAdatper(getSupportFragmentManager(), fragmentList));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                switch (i) {
-                    case 0:
-                        radioGroup.check(R.id.rb_1);
-                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
-                        break;
-                    case 1:
-                        radioGroup.check(R.id.rb_2);
-                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
-                        break;
-                    case 2:
-                        radioGroup.check(R.id.rb_3);
-                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
-                        break;
-                    case 3:
-                        radioGroup.check(R.id.rb_4);
-                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
-                        break;
-                    case 4:
-                        radioGroup.check(R.id.rb_5);
-                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
-                        break;
-                }
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
+//       ; viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int i, float v, int i1) {
+//
+//            }
+//
+//            @Override
+//            public void onPageSelected(int i) {
+//                switch (i) {
+//                    case 0:
+//                        radioGroup.check(R.id.rb_1);
+//                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
+//                        break;
+//                    case 1:
+//                        radioGroup.check(R.id.rb_2);
+//                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
+//                        break;
+//                    case 2:
+//                        radioGroup.check(R.id.rb_3);
+//                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
+//                        break;
+//                    case 3:
+//                        radioGroup.check(R.id.rb_4);
+//                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.white));
+//                        break;
+//                    case 4:
+//                        radioGroup.check(R.id.rb_5);
+//                        StatusBarUtil.setColor(MainActivity.this, AppUtils.getColor(R.color.SM_6277FF));
+//                        break;
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int i) {
+//
+//            }
+//        });
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
