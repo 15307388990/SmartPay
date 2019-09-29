@@ -1,5 +1,6 @@
 package com.ming.smartpay.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -9,7 +10,7 @@ import cn.bmob.v3.BmobObject;
  * created at 2019-09-09 14:26
  * 工位表
  */
-public class StationTab extends BmobObject {
+public class StationTab extends BmobObject implements Serializable {
     private int id;
     private String projectId;
     private String deviceId;

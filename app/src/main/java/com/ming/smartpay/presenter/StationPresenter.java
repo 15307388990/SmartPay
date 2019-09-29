@@ -19,6 +19,7 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class StationPresenter extends MvpPresenter<StationView> {
     /**
@@ -72,6 +73,61 @@ public class StationPresenter extends MvpPresenter<StationView> {
         });
 
 
+    }
+    /**
+     * 修改工位
+     */
+    public void update(String objectId,String name, String device, final String projectId, String str) {
+        if (TextUtil.isEmpty(name)) {
+            ToastShow.s("工位名称不能为空");
+            return;
+        }
+        if (TextUtil.isEmpty(device)) {
+            ToastShow.s("设备序列号不能为空");
+            return;
+        }
+        if (TextUtil.isEmpty(str)) {
+            ToastShow.s("图片没有上传");
+        }
+        String imgUrl = changejson(str);
+        BmobQuery<StationTab> bmobQuery = new BmobQuery<>();
+        StationTab stationTab = new StationTab();
+        stationTab.setDeviceId(device);
+        stationTab.setProjectId(projectId);
+        stationTab.setStationName(name);
+        stationTab.setImgUrl(imgUrl);
+        stationTab.update(objectId, new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    ToastShow.s("修改成功");
+                    //更新数据
+                    showDate(projectId);
+                } else {
+                    ToastShow.s("修改失败：" + e.getMessage());
+                }
+            }
+        });
+
+
+    }
+    /**
+     * 删除
+     */
+    public void delete(String objectid, final String ProjectId) {
+        StationTab stationTab = new StationTab();
+        stationTab.setObjectId(objectid);
+        stationTab.delete(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    ToastShow.s("删除成功:");
+                    showDate(ProjectId);
+                } else {
+                    ToastShow.s("删除失败：" + e.getMessage());
+                }
+            }
+        });
     }
 
     private String changejson(String str) {

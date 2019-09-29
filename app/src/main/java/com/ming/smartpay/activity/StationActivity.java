@@ -13,10 +13,13 @@ import com.ming.smartpay.R;
 import com.ming.smartpay.adapter.HomeAdapter;
 import com.ming.smartpay.adapter.StationAdapter;
 import com.ming.smartpay.base.activity.MvpActivity;
+import com.ming.smartpay.base.cache.ACache;
 import com.ming.smartpay.base.utils.AppUtils;
 import com.ming.smartpay.base.utils.StatusBarUtil;
+import com.ming.smartpay.base.widget.ToastShow;
 import com.ming.smartpay.bean.StationTab;
 import com.ming.smartpay.dialogfrment.AddStationDialog;
+import com.ming.smartpay.dialogfrment.BtnDialog;
 import com.ming.smartpay.presenter.StationPresenter;
 import com.ming.smartpay.view.modelview.StationView;
 
@@ -30,7 +33,7 @@ import butterknife.ButterKnife;
  * created at 2019/8/19 9:22 AM
  * 工位管理
  */
-public class StationActivity extends MvpActivity<StationView, StationPresenter> implements StationView {
+public class StationActivity extends MvpActivity<StationView, StationPresenter> implements StationView, BtnDialog.OnClickListener {
     public static String PROJECTID = "ProjectId";
     public static String PROJECTNAME = "ProjectName";
     @BindView(R.id.ll_add)
@@ -39,6 +42,8 @@ public class StationActivity extends MvpActivity<StationView, StationPresenter> 
     RecyclerView recyclerview;
     private String ProjectId;
     private String ProjectName;
+
+    private StationTab stationTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +69,9 @@ public class StationActivity extends MvpActivity<StationView, StationPresenter> 
             @Override
             public void onClick(View v) {
                 AddStationDialog.newInstance().setOnClickListener(new AddStationDialog.OnClickListener() {
+
                     @Override
-                    public void successful(String name, String device, String imgUrl) {
+                    public void successful(String obiectid, String name, String device, String imgUrl) {
                         mPresenter.save(name, device, ProjectId, imgUrl);
                     }
 
@@ -97,7 +103,7 @@ public class StationActivity extends MvpActivity<StationView, StationPresenter> 
     @Override
     public void showDate(final List<StationTab> stationTabs) {
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
-        StationAdapter stationAdapter = new StationAdapter( stationTabs);
+        StationAdapter stationAdapter = new StationAdapter(stationTabs);
         stationAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
@@ -108,6 +114,35 @@ public class StationActivity extends MvpActivity<StationView, StationPresenter> 
                 }
             }
         });
+        stationAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                BtnDialog.newInstance().setOnClickListener(StationActivity.this).show(StationActivity.this);
+                stationTab = stationTabs.get(position);
+                return false;
+            }
+        });
         recyclerview.setAdapter(stationAdapter);
+    }
+
+
+    @Override
+    public void update() {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("station", stationTab);
+        AddStationDialog.newInstance(bundle).setOnClickListener(new AddStationDialog.OnClickListener() {
+            @Override
+            public void successful(String obiectid, String name, String device, String imgUrl) {
+                mPresenter.update(obiectid, name, device, ProjectId, imgUrl);
+            }
+        }).show(StationActivity.this);
+
+    }
+
+    @Override
+    public void delete() {
+        mPresenter.delete(stationTab.getObjectId(), ProjectId);
+
+
     }
 }

@@ -25,6 +25,7 @@ public class HomePresenter extends MvpPresenter<HomeView> {
         bmobQuery.findObjects(new FindListener<ProjectTab>() {
             @Override
             public void done(List<ProjectTab> list, BmobException e) {
+
                 getView().showData(list);
             }
         });

@@ -14,7 +14,9 @@ import android.provider.MediaStore;
 import android.view.View;
 
 import com.ming.smartpay.R;
+import com.ming.smartpay.base.utils.TextUtil;
 import com.ming.smartpay.base.widget.ToastShow;
+import com.ming.smartpay.bean.StationTab;
 import com.ming.smartpay.databinding.DialogAddStationBinding;
 import com.ming.smartpay.utils.ImageUtil;
 import com.yanzhenjie.permission.Action;
@@ -61,17 +63,20 @@ public class AddStationDialog extends CenterDialog {
                 binding.tvUpload.setText("已上传");
 
             } else if (msg.what == 1) {
-                ToastShow.s( "图片上传失败 请重新上传");
+                ToastShow.s("图片上传失败 请重新上传");
             }
 
         }
     };
+    private String obiectid;
 
     /**
      * 定义结果回调接口
      */
     public interface OnClickListener {
-        void successful(String name, String device,String imgUrl);
+
+        void successful(String obiectid, String name, String device, String imgUrl);
+
 
     }
 
@@ -92,13 +97,34 @@ public class AddStationDialog extends CenterDialog {
         return dialog;
     }
 
+    public static AddStationDialog newInstance(Bundle bundle) {
+        AddStationDialog dialog = new AddStationDialog();
+        dialog.setArguments(bundle);
+        return dialog;
+    }
+
     @Override
     public void initView(ViewDataBinding dataBinding) {
+        final Bundle bundle = getArguments();
         binding = (DialogAddStationBinding) dataBinding;
+        if (bundle != null) {
+            StationTab stationTab = (StationTab) bundle.getSerializable("station");
+            if (stationTab != null) {
+                binding.etEdit.setText(stationTab.getStationName());
+                binding.etDevice.setText(stationTab.getDeviceId());
+                str = stationTab.getImgUrl();
+                binding.tvUpload.setText("已上传");
+                obiectid = stationTab.getObjectId();
+            }
+        }
         binding.tvOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClickListener.successful(binding.etEdit.getText().toString().trim(), binding.etDevice.getText().toString().trim(),str);
+                if (TextUtil.isEmpty(obiectid)) {
+                    onClickListener.successful(null, binding.etEdit.getText().toString().trim(), binding.etDevice.getText().toString().trim(), str);
+                } else {
+                    onClickListener.successful(obiectid, binding.etEdit.getText().toString().trim(), binding.etDevice.getText().toString().trim(), str);
+                }
                 dismiss();
             }
         });
@@ -110,6 +136,7 @@ public class AddStationDialog extends CenterDialog {
         });
         mDialog = new ProgressDialog(getActivity());
         mDialog.setCancelable(false);
+
 
     }
 
@@ -198,7 +225,7 @@ public class AddStationDialog extends CenterDialog {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    str=response.body().string();
+                    str = response.body().string();
                     mDialog.dismiss();
                     handler.sendEmptyMessage(0);
 

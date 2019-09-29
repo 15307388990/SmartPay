@@ -29,7 +29,7 @@ public class CancelTheDealDialog extends CenterDialog {
     /**
      * 定义结果回调接口
      */
-    public interface OnClickListener {
+    public interface  OnClickListener {
         void successful();
 
     }
