@@ -5,11 +5,9 @@ import android.os.Bundle;
 import com.ming.smartpay.R;
 import com.ming.smartpay.base.fragment.MvpFragment;
 import com.ming.smartpay.presenter.HomePresenter;
-import com.ming.smartpay.presenter.MyPresenter;
 import com.ming.smartpay.view.modelview.HomeView;
-import com.ming.smartpay.view.modelview.MyView;
 
-public class CoreFragemt extends MvpFragment<MyView, MyPresenter> implements MyView {
+public class CoreFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView {
 
     public static CoreFragemt newInstance() {
         return new CoreFragemt();
@@ -28,8 +26,8 @@ public class CoreFragemt extends MvpFragment<MyView, MyPresenter> implements MyV
     }
 
     @Override
-    protected MyPresenter createPresenter() {
-        return new MyPresenter();
+    protected HomePresenter createPresenter() {
+        return new HomePresenter();
     }
 
     @Override

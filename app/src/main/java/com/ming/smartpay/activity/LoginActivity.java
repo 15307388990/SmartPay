@@ -1,6 +1,7 @@
 package com.ming.smartpay.activity;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import com.ming.smartpay.R;
 import com.ming.smartpay.base.activity.MvpActivity;
 import com.ming.smartpay.base.utils.AppUtils;
 import com.ming.smartpay.base.utils.StatusBarUtil;
+import com.ming.smartpay.databinding.ActivityLoginBinding;
 import com.ming.smartpay.presenter.MainPresenter;
 import com.ming.smartpay.view.modelview.MianView;
 
@@ -21,14 +23,12 @@ import butterknife.BindView;
  */
 public class LoginActivity extends MvpActivity<MianView, MainPresenter> {
 
-
-    @BindView(R.id.btn_login)
-    Button btnLogin;
+    ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        DataBindingUtil.setContentView(this, R.layout.activity_login);
         StatusBarUtil.setColor(this, AppUtils.getColor(R.color.SM_6277FF));
         onClick();
 
@@ -36,7 +36,7 @@ public class LoginActivity extends MvpActivity<MianView, MainPresenter> {
     }
 
     private void onClick() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
