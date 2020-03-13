@@ -20,8 +20,12 @@ import android.widget.Toast;
 
 
 import com.ming.smartpay.R;
+import com.ming.smartpay.bean.VersionBean;
 import com.ming.smartpay.databinding.UpgradeDialogBinding;
 import com.ming.smartpay.utils.Tools;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,8 +51,9 @@ public class VersionUpgradeDialog extends CenterDialog {
     private ProgressBar pBar;
     private TextView tv_progress;
     private Handler mViewUpdateHandler;
+    private VersionBean bean;
     // 下载存储的文件名
-    private static final String DOWNLOAD_NAME = "cypay";
+    private static final String DOWNLOAD_NAME = "smart";
     private Context mContext;
     Dialog dialog;
 
@@ -121,8 +126,11 @@ public class VersionUpgradeDialog extends CenterDialog {
 
     }
 
-    public static VersionUpgradeDialog newInstance() {
+    public static VersionUpgradeDialog newInstance(VersionBean bean) {
         VersionUpgradeDialog dialog = new VersionUpgradeDialog();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(VERSION, bean);
+        dialog.setArguments(bundle);
         return dialog;
     }
 
@@ -156,6 +164,10 @@ public class VersionUpgradeDialog extends CenterDialog {
     @Override
     public void initView(ViewDataBinding dataBinding) {
         binding = (UpgradeDialogBinding) dataBinding;
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            bean = (VersionBean) bundle.getSerializable(VERSION);
+        }
         pBar = binding.pbProgressbar;
         tv_progress = binding.tvProgress;
         mProgDialog = new ProgressDialog(VersionUpgradeDialog.this.getActivity());
@@ -166,8 +178,20 @@ public class VersionUpgradeDialog extends CenterDialog {
                 dismiss();
             }
         });
-
-
+        binding.tvTitle.setText("发现新版本" );
+        binding.tvOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(bean.getData().getAndroid_url())) {
+                    initPermission();
+                } else {
+                    Tools.showToast(getActivity(), "APK下载地址为空");
+                }
+            }
+        });
+//        if (versionBean.updateType == 1) {
+//            binding.tvCancle.setVisibility(View.GONE);
+//        }
     }
 
 
@@ -334,5 +358,28 @@ public class VersionUpgradeDialog extends CenterDialog {
 
     }
 
+    private void initPermission() {
+        AndPermission.with(getActivity())
+                .runtime()
+                .permission(Permission.WRITE_EXTERNAL_STORAGE,Permission.READ_EXTERNAL_STORAGE).
+                onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+                        binding.tvContext.setVisibility(View.GONE);
+                        binding.llProgres.setVisibility(View.VISIBLE);
+                        binding.tvOk.setVisibility(View.GONE);
+                        DownloadTask downloadTask = new DownloadTask(
+                                getActivity());
+                        downloadTask.execute(bean.getData().getAndroid_url());
+                    }
+                }).
+                onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+                        Tools.showToast(getActivity(), "无法获取手机权限，功能无法正常使用");
+                    }
+                }).
+                start();
 
+    }
 }

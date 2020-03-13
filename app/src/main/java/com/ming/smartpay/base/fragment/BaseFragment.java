@@ -1,73 +1,58 @@
 package com.ming.smartpay.base.fragment;
 
-import android.app.Activity;
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.Toolbar;
 
-import com.ming.smartpay.R;
-import com.ming.smartpay.base.widget.TitleBar;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.ming.smartpay.activity.LoginActivity;
+import com.ming.smartpay.base.widget.ToastShow;
+import com.ming.smartpay.utils.Tools;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class BaseFragment extends BaseV4Fragment{
+/**
+ * @author 罗富贵 Activity 基类
+ */
 
+public abstract class BaseFragment extends BaseV4Fragment implements Listener<String>, ErrorListener {
 
-    private LinearLayout mViewContainer;
-    private Unbinder mUnbinder;
-    public TitleBar mTitleBar;
-
-
-    public void setContentView(int layoutId, String title) {
-        setContentViews(layoutId,title);
-    }
-
-
-    public void setContentView(int layoutId) {
-        setContentViews(layoutId,"");
-    }
-
-    private void setContentViews(int layoutId, String title){
-
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        LinearLayout parentView = (LinearLayout) inflater.inflate(R.layout.fragemt_base, null);
-
-
-        super.setContentView(parentView);
-
-        mViewContainer=(LinearLayout)parentView.findViewById(R.id.ll_container);
-        mTitleBar = (TitleBar) parentView.findViewById(R.id.titleBar);
-        if (!TextUtils.isEmpty(title)){
-            mTitleBar.setVisibility(View.VISIBLE);
-            mTitleBar.setTitle(title);
-        }else{
-            mTitleBar.setVisibility(View.GONE);
-        }
-
-        View childView = inflater.inflate(layoutId, null);
-        mViewContainer.addView(childView);
-        mUnbinder = ButterKnife.bind(this, childView);
-    }
 
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mUnbinder!=null){
-            mUnbinder.unbind();
+    public void onErrorResponse(VolleyError error) {
+        dismissDialog();
+        ToastShow.s("网络连接异常");
+    }
+
+    @Override
+    public void onResponse(String response, String url) {
+        dismissDialog();
+        try {
+            JSONObject json = new JSONObject(response);
+            int stauts = json.optInt("code");
+            String msg = json.optString("msg");
+            String data = json.optString("data");
+            if (stauts == 200) {
+                returnData(response, url);
+            } else if (stauts==203){
+                ToastShow.s(msg);
+                mSavePreferencesData.putStringData("token","");
+                Tools.jump(getActivity(), LoginActivity.class,true);
+            }else {
+                ToastShow.s(msg);
+                returnMsg(response, url);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ToastShow.s("数据格式不对");
         }
     }
 
+    public void returnData(String data, String url) {
+    }
 
-
-
+    protected void returnMsg(String data, String url) {
+    }
 
 }

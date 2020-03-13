@@ -1,86 +1,88 @@
 package com.ming.smartpay.fragment.mian;
 
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.databinding.DataBindingUtil;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.alibaba.fastjson.JSON;
+import com.android.volley.Request;
 import com.ming.smartpay.R;
-import com.ming.smartpay.activity.StationActivity;
-import com.ming.smartpay.adapter.HomeAdapter;
-import com.ming.smartpay.base.fragment.MvpFragment;
-import com.ming.smartpay.bean.ProjectTab;
-import com.ming.smartpay.dialogfrment.AddProjectDialog;
-import com.ming.smartpay.presenter.HomePresenter;
-import com.ming.smartpay.view.WiperSwitch;
-import com.ming.smartpay.view.modelview.HomeView;
+import com.ming.smartpay.adapter.OrderAdapter;
+import com.ming.smartpay.base.fragment.BaseFragment;
+import com.ming.smartpay.bean.EventBusBean;
+import com.ming.smartpay.bean.LineUpBean;
+import com.ming.smartpay.bean.LongChainBean;
+import com.ming.smartpay.bean.MianOrderBean;
+import com.ming.smartpay.config.EventConstant;
+import com.ming.smartpay.config.MyConst;
+import com.ming.smartpay.databinding.FragemtHomeBinding;
+import com.ming.smartpay.dialogfrment.CancelTheDealDialog;
+import com.ming.smartpay.dialogfrment.CountdownDialog;
+import com.ming.smartpay.utils.MyCountTimer;
+import com.ming.smartpay.utils.ParamTools;
+import com.ming.smartpay.utils.Tools;
+import com.ming.smartpay.view.modelview.TimerOnback;
 
-import java.util.List;
 
-import butterknife.BindView;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements HomeView, BaseQuickAdapter.OnItemClickListener, HomeAdapter.OnChangedListener {
+public class HomeFragemt extends BaseFragment {
 
 
-    @BindView(R.id.recyclerview)
-    RecyclerView recyclerview;
-    @BindView(R.id.ll_add)
-    TextView llAdd;
-    @BindView(R.id.btn_refresh)
-    Button btnRefresh;
-
-    private List<ProjectTab> projectTabs;
+    private FragemtHomeBinding binding;
+    private OrderAdapter orderAdapter;
+    private MyCountTimer myCountTimer;
+    private boolean isbounced = false;
 
     public static HomeFragemt newInstance() {
         return new HomeFragemt();
     }
 
-    @Override
-    protected void onCreateView(Bundle savedInstanceState) {
-        super.onCreateView(savedInstanceState);
-        setContentView(R.layout.fragemt_home);
 
-
+    //首页获取订单列表-【初始化接口】
+    public void getneworder() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.getneworder, getActivity(), this, this, map, Request.Method.GET));
+        showLoadDialog();
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    //首页获取排队位置
+    public void getqrline() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.getqrline, getActivity(), this, this, map, Request.Method.GET));
+        showLoadDialog();
+    }
 
+    //首页开始排队
+    public void insertqrline() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.insertqrline, getActivity(), this, this, map, Request.Method.GET));
+        showLoadDialog();
+    }
+
+    //取消排队
+    public void outqrline() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.outqrline, getActivity(), this, this, map, Request.Method.GET));
+        showLoadDialog();
+    }
+
+    //接受排队
+    public void accept() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.accept, getActivity(), this, this, map, Request.Method.GET));
+        showLoadDialog();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.showDate();
     }
 
-    @Override
-    protected HomePresenter createPresenter() {
-        return new HomePresenter();
-    }
-
-    @Override
-    public void showLoading(String msg) {
-
-    }
-
-    @Override
-    public void hideLoading() {
-
-    }
-
-    @Override
-    public void showError(String msg) {
-
-    }
 
     @Override
     public void onDestroyView() {
@@ -88,55 +90,168 @@ public class HomeFragemt extends MvpFragment<HomeView, HomePresenter> implements
     }
 
     @Override
-    public void showData(List<ProjectTab> projectTabs) {
-        this.projectTabs = projectTabs;
-        if (projectTabs == null || projectTabs.size() < 1) {
-            btnRefresh.setVisibility(View.VISIBLE);
-            recyclerview.setVisibility(View.GONE);
-        } else {
-            btnRefresh.setVisibility(View.GONE);
-            recyclerview.setVisibility(View.VISIBLE);
-            recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
-            HomeAdapter homeAdapter = new HomeAdapter(projectTabs, this);
-            homeAdapter.setOnItemClickListener(this);
-            recyclerview.setAdapter(homeAdapter);
-        }
+    public View getLayoutRes() {
+        binding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.fragemt_home, null, false);
+        return binding.getRoot();
+    }
 
-
-        llAdd.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void initEvent() {
+        binding.llLineUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddProjectDialog.newInstance().setOnClickListener(new AddProjectDialog.OnClickListener() {
+                isbounced = false;
+                insertqrline();
+            }
+        });
+        binding.tvOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CancelTheDealDialog.newInstance().setTitle("是否退出排队状态").setContext("").setOktext("确认").setQtext("取消").setOnClickListener(new CancelTheDealDialog.OnClickListener() {
                     @Override
-                    public void successful(String name) {
-
-                        mPresenter.AddProject(name);
+                    public void successful() {
+                        outqrline();
                     }
                 }).show(getActivity());
+
             }
         });
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
+
+    }
+
+    @Override
+    public void returnData(String data, String url) {
+        if (url.contains(MyConst.getneworder)) {
+            MianOrderBean orderBean = JSON.parseObject(data, MianOrderBean.class);
+            if (orderAdapter == null) {
+                orderAdapter = new OrderAdapter(orderBean.getData().getList());
+                binding.recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
+                binding.recyclerview.setAdapter(orderAdapter);
+            } else {
+                orderAdapter.setNewData(orderBean.getData().getList());
+            }
+            binding.tvTodayAmount.setText(orderBean.getData().getToday_amount() + "");
+            binding.tvTodayIncome.setText(orderBean.getData().getToday_income() + "");
+            binding.tvTodayTotal.setText(orderBean.getData().getToday_total() + "");
+        } else if (url.contains(MyConst.getqrline)) {
+            LineUpBean lineUpBean = JSON.parseObject(data, LineUpBean.class);
+            if (lineUpBean.getData() != null) {
+                initLineUP(lineUpBean.getData());
+            } else {
+                outLine();
+            }
+
+        } else if (url.contains(MyConst.insertqrline)) {
+            LineUpBean lineUpBean = JSON.parseObject(data, LineUpBean.class);
+            initLineUP(lineUpBean.getData());
+
+        } else if (url.contains(MyConst.outqrline)) {
+            outLine();
+        } else if (url.contains(MyConst.accept)) {
+
+        }
+    }
+
+    /**
+     * 初始化排队
+     */
+    private void initLineUP(final LongChainBean lineUpBean) {
+        binding.llPay.setVisibility(View.VISIBLE);
+        binding.tvLineUp.setText(lineUpBean.getQrname());
+        if (lineUpBean.getChannel_name().contains("支付宝")) {
+            binding.ivLineUp.setImageResource(R.mipmap.home_icon_a);
+        } else {
+            binding.ivLineUp.setImageResource(R.mipmap.home_icon_b);
+        }
+        binding.tvQrline.setText(lineUpBean.getQrline() + "");
+        binding.rlLineup.setVisibility(View.VISIBLE);
+        binding.llLineUp.setVisibility(View.GONE);
+        if (myCountTimer != null) {
+            myCountTimer.cancel();
+            myCountTimer = null;
+        }
+        //开启定时器
+        myCountTimer = new MyCountTimer(getActivity(), binding.tvTime, R.color.SM_6C42F5, Tools.getDateMs(lineUpBean.getEstimatedtime()), new TimerOnback() {
             @Override
-            public void onClick(View v) {
-                mPresenter.showDate();
+            public void onFinish() {
+            }
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                //对比时间 是否弹框
+                long promptingtime = Tools.getDateMs(lineUpBean.getPromptingtime());
+                if (millisUntilFinished < promptingtime && lineUpBean.isIs_promptbox() && !isbounced) {
+                    //去弹框
+                    CountdownDialog.newInstance(lineUpBean.getCountdown() * 1000).setOnClickListener(new CountdownDialog.OnClickListener() {
+                        @Override
+                        public void successful() {
+                            accept();
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            outqrline();
+
+                        }
+
+                        @Override
+                        public void cancel() {
+                            outqrline();
+                        }
+                    }).show(getActivity());
+                    isbounced = true;
+                }
+
             }
         });
+        myCountTimer.start();
+    }
+
+    /**
+     * 取消排队 或者没有排队
+     */
+    private void outLine() {
+        binding.llPay.setVisibility(View.GONE);
+        binding.rlLineup.setVisibility(View.GONE);
+        binding.llLineUp.setVisibility(View.VISIBLE);
+        if (myCountTimer != null) {
+            myCountTimer.cancel();
+        }
 
     }
 
+    @Subscribe
+    public void onEventReceive(EventBusBean event) {
+        if (EventConstant.OUTLINE.equals(event.getEventName())) {
+            outLine();
+        } else if (EventConstant.UPDATELINE.equals(event.getEventName())) {
+            initLineUP(event.getData());
+        } else if (EventConstant.ORDERS.equals(event.getEventName())) {
+            //刷新
+            getneworder();
+
+        }
+    }
 
     @Override
-    public void OnChanged(WiperSwitch wiperSwitch, boolean checkState, int position) {
-        mPresenter.UpdateAll(projectTabs.get(position).getObjectId(), checkState);
-
+    public void onDestroy() {
+        super.onDestroy();
+        if (myCountTimer != null) {
+            myCountTimer.cancel();
+        }
     }
 
     @Override
-    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-        ProjectTab projectTab = projectTabs.get(position);
-        Intent intent = new Intent(getActivity(), StationActivity.class);
-        intent.putExtra(StationActivity.PROJECTID, projectTab.getObjectId());
-        intent.putExtra(StationActivity.PROJECTNAME, projectTab.getPrijectName());
-        startActivity(intent);
+    protected boolean useEventBus() {
+        return true;
     }
+
+    @Override
+    public void initData() {
+        getneworder();
+        getqrline();
+
+    }
+
+
 }

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -40,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -154,6 +157,46 @@ public class Tools {
         DisplayMetrics dm = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
         return dm.heightPixels;
+    }
+
+    public static void openKeyBoard(Context context, View editText) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService("input_method");
+        inputMethodManager.showSoftInput(editText, 2);
+    }
+
+    public static String getUUID() {
+
+        String serial = null;
+
+        String m_szDevIDShort = "35" +
+                Build.BOARD.length() % 10 + Build.BRAND.length() % 10 +
+
+                Build.CPU_ABI.length() % 10 + Build.DEVICE.length() % 10 +
+
+                Build.DISPLAY.length() % 10 + Build.HOST.length() % 10 +
+
+                Build.ID.length() % 10 + Build.MANUFACTURER.length() % 10 +
+
+                Build.MODEL.length() % 10 + Build.PRODUCT.length() % 10 +
+
+                Build.TAGS.length() % 10 + Build.TYPE.length() % 10 +
+
+                Build.USER.length() % 10; //13 位
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                serial = android.os.Build.getSerial();
+            } else {
+                serial = Build.SERIAL;
+            }
+            //API>=9 使用serial号
+            return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+        } catch (Exception exception) {
+            //serial需要一个初始化
+            serial = "serial"; // 随便一个初始化
+        }
+        //使用硬件信息拼凑出来的15位号码
+        return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
     }
 
 
@@ -621,15 +664,41 @@ public class Tools {
     }
 
     /**
-     * 时间戳转时间
+     * 转换成毫秒
      */
-    public static String getDateformat(long time) {
-        if (time == 0) {
-            return "";
-        }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(time);
+    public static long getDateMs(String timer) {
+        String[] mytime = timer.split(":");
+        int hour = Integer.parseInt(mytime[0]);
+        int min = Integer.parseInt(mytime[1]);
+        int sec = Integer.parseInt(mytime[2]);
+        long totalSec = (hour * 3600 + min * 60 + sec) * 1000;
+        return totalSec;
+    }
 
+    /**
+     * 毫秒转换成时间格式
+     */
+    public static String getDateMs(int timer) {
+        StringBuffer buffer = new StringBuffer();
+        int hour = (timer / 3600);
+        int min = ((timer - hour * 3600) / 60);
+        int sec = ((timer - hour * 3600) - min * 60);
+        if (hour < 10) {
+            buffer.append("0");
+        }
+        buffer.append(hour);
+        buffer.append(":");
+        if (min < 10) {
+            buffer.append("0");
+        }
+        buffer.append(min);
+        buffer.append(":");
+        if (sec < 10) {
+            buffer.append("0");
+        }
+        buffer.append(sec);
+
+        return buffer.toString();
     }
 
     /**
@@ -745,4 +814,33 @@ public class Tools {
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file)));
     }
 
+    private static DisplayMetrics sDM = Resources.getSystem().getDisplayMetrics();
+
+    public static int getScreenWidth() {
+        return sDM.widthPixels;
+    }
+
+    public static int getScreenHeight() {
+        return sDM.heightPixels;
+    }
+
+    public static float getDensity() {
+        return sDM.density;
+    }
+
+    public static int dpToPx(int dp) {
+        return dpToPx((float) dp);
+    }
+
+    public static int dpToPx(float dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, sDM);
+    }
+
+    public static int spToPx(float sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, sDM);
+    }
+
+    public static int pxToDp(int px) {
+        return Math.round(px / getDensity());
+    }
 }

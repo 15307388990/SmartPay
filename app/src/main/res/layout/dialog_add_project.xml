@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:keepScreenOn="true">
 
 
     <LinearLayout
@@ -9,31 +10,86 @@
         android:background="@drawable/addproject_dialog_bg"
         android:gravity="center"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.ming.smartpay.view.CirclePercentView
+                android:id="@+id/circle_percent_progress"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="25dp"
+                app:circleBgColor="@color/SM_E1E1E2"
+                app:circleIsGradient="true"
+                app:circleProgressColor="@color/SM_697BFE" />
+
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="倒计时"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="75dp"
+                android:textColor="#ff000000"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/tv_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_text"
+                android:layout_centerHorizontal="true"
+                android:text="00:30:25"
+                android:textColor="#ff6c42f5"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="新增项目"
-            android:textSize="18sp"
-            android:textColor="@color/txt_title"
-            android:layout_marginTop="15dp"/>
-        <EditText
-            android:id="@+id/et_edit"
+            android:layout_marginTop="15dp"
+            android:text="未按时间内点击接受，将会退出排队"
+            android:textColor="#ff666666"
+            android:textSize="12sp" />
+
+        <View
             android:layout_width="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
-            android:hint="请输入项目名称"
-            android:textSize="15sp"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/tv_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="确定"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/txt_title"/>
+            android:layout_height="1px"
+            android:layout_marginTop="17dp"
+            android:background="@color/SM_F0F0F0" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/tv_cancle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="拒绝"
+                android:textColor="@color/SM_6277FF"
+                android:textSize="17sp" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="#DCDEE3" />
+
+            <TextView
+                android:id="@+id/tv_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="接受"
+                android:textColor="@color/SM_6277FF"
+                android:textSize="17sp" />
+        </LinearLayout>
     </LinearLayout>
 </layout>

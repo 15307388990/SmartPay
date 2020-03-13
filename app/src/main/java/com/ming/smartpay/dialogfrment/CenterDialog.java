@@ -66,12 +66,18 @@ public abstract class CenterDialog extends DialogFragment {
     protected void initWindowParams(Dialog dialog) {
         Window win = dialog.getWindow();
         if (win != null) {
-//            win.setWindowAnimations(R.style.rise);  //添加动画
             WindowManager.LayoutParams lp = win.getAttributes();
-            lp.width = getWindowWidth();
-            lp.height = getScreenHeight();
-            lp.gravity = getGravity();
-            win.setAttributes( lp );
+            if (isBottom()) {
+                win.setWindowAnimations(R.style.DialogTheme_BottomAnimation);
+                lp.width = Tools.getScreenWidth(getActivity());
+                lp.gravity = Gravity.BOTTOM;
+            } else {
+                lp.gravity = Gravity.CENTER;
+                lp.width = (int) (Tools.getScreenWidth(getActivity()) * (1 - 0.267f));
+            }
+            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+            win.setAttributes(lp);
         }
     }
 
@@ -105,5 +111,8 @@ public abstract class CenterDialog extends DialogFragment {
             super.show( fragmentManager, tag );
 
         }
+    }
+    public boolean isBottom() {
+        return false;
     }
 }
