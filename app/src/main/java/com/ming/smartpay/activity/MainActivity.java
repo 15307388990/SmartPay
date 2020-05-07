@@ -62,6 +62,10 @@ public class MainActivity extends BaseActivity {
                         EventBus.getDefault().post(new EventBusBean(EventConstant.ORDERS, bean));
                     }
                 }
+            } else if (msg.what == 2) {
+                EventBus.getDefault().post(new EventBusBean(EventConstant.DISCONNECT));
+            } else if (msg.what == 3) {
+                EventBus.getDefault().post(new EventBusBean(EventConstant.CONNECT));
             }
 
         }
@@ -111,6 +115,34 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public void onDisconnected() {
+        super.onDisconnected();
+        new Thread() {
+            @Override
+            public void run() {
+                //断开连接
+                Message message = Message.obtain();
+                message.what = 2;
+                handler.sendMessage(message);
+            }
+        }.start();
+    }
+
+    @Override
+    public void onConnected() {
+        super.onConnected();
+        new Thread() {
+            @Override
+            public void run() {
+                //连接
+                Message message = Message.obtain();
+                message.what = 3;
+                handler.sendMessage(message);
+            }
+        }.start();
+    }
+
+    @Override
     public void initData() {
     }
 
@@ -119,6 +151,10 @@ public class MainActivity extends BaseActivity {
         super.returnData(data, url);
         if (url.contains(MyConst.binduid)) {
             ToastShow.s("绑定成功");
+        } else if (url.contains(MyConst.confirm)) {
+            if (homeFragemt != null) {
+                homeFragemt.getneworder();
+            }
         }
     }
 

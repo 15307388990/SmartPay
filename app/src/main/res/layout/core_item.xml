@@ -39,6 +39,25 @@
         android:text="支付方式：支付宝"
         android:textColor="#ff999999"
         android:textSize="13sp" />
+    <TextView
+        android:id="@+id/tv_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="7dp"
+        android:text="二维码账号："
+        android:textColor="#ff999999"
+        android:textSize="13sp" />
+    <TextView
+        android:id="@+id/tv_pid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="7dp"
+        android:text="二维PID："
+        android:visibility="gone"
+        android:textColor="#ff999999"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/tv_created_time"

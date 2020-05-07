@@ -138,4 +138,9 @@ public class CountdownDialog extends CenterDialog {
             myCountTimer.cancel();
         }
     }
+
+    @Override
+    public void dismiss() {
+        super.dismissAllowingStateLoss();
+    }
 }

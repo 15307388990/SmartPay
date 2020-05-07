@@ -30,8 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:background="@null"
-                android:hint="请输入手机号码"
-                android:inputType="phone" />
+                android:hint="请输入手机号码" />
         </LinearLayout>
 
         <View
@@ -71,6 +70,7 @@
                 android:background="@drawable/cb_password"
                 android:button="@null" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
@@ -78,6 +78,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="38dp"
             android:background="@color/SM_D8D8D8" />
+
         <Button
             android:id="@+id/btn_login"
             android:layout_width="match_parent"

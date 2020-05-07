@@ -7,16 +7,21 @@ import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
+import com.liaoinstan.springview.container.DefaultFooter;
+import com.liaoinstan.springview.container.DefaultHeader;
+import com.liaoinstan.springview.widget.SpringView;
 import com.ming.smartpay.R;
 import com.ming.smartpay.activity.AddCodeActivity;
 import com.ming.smartpay.adapter.CoreListAdapter;
 import com.ming.smartpay.base.fragment.BaseFragment;
+import com.ming.smartpay.base.widget.ToastShow;
 import com.ming.smartpay.bean.CoreBean;
 import com.ming.smartpay.config.MyConst;
 import com.ming.smartpay.databinding.FragemtCodeBinding;
 import com.ming.smartpay.utils.ParamTools;
 import com.ming.smartpay.utils.Tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +53,22 @@ public class CoreFragemt extends BaseFragment {
                 Tools.jump(getActivity(), AddCodeActivity.class, false);
             }
         });
+        binding.springView.setHeader(new DefaultHeader(getActivity()));
+        binding.springView.setFooter(new DefaultFooter(getActivity()));
+        binding.springView.setListener(new SpringView.OnFreshListener() {
+            @Override
+            public void onRefresh() {
+                getqrlist();
+            }
+
+            @Override
+            public void onLoadmore() {
+                getqrlist();
+                ToastShow.s("没有更多数据了");
+                binding.springView.onFinishFreshAndLoad();
+
+            }
+        });
 
     }
 
@@ -75,6 +96,7 @@ public class CoreFragemt extends BaseFragment {
     @Override
     public void returnData(String data, String url) {
         if (url.contains(MyConst.getqrlist)) {
+            binding.springView.onFinishFreshAndLoad();
             CoreBean coreBean = JSON.parseObject(data, CoreBean.class);
             if (coreBean.getData() != null) {
                 binding.llList.setVisibility(View.VISIBLE);

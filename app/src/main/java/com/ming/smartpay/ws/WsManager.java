@@ -28,7 +28,7 @@ public class WsManager {
      */
     private static final int FRAME_QUEUE_SIZE = 5;
     private static final int CONNECT_TIMEOUT = 500000;
-    private static final String DEF_RELEASE_URL = "ws://47.75.5.205:8585";//正式服默认地址
+    private static final String DEF_RELEASE_URL = "ws://47.57.19.48:8585";//正式服默认地址
     private String url;
 
     private WsStatus mStatus;

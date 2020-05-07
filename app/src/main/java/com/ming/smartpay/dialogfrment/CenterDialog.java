@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import android.view.WindowManager;
 import com.ming.smartpay.R;
 import com.ming.smartpay.utils.Tools;
 
+import java.lang.reflect.Field;
+
 
 /**
  * @Author luoming
@@ -28,20 +31,20 @@ public abstract class CenterDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog( getActivity(), R.style.DialogStyle );
+        Dialog dialog = new Dialog(getActivity(), R.style.DialogStyle);
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setDimAmount( 0.65f );
+            dialog.getWindow().setDimAmount(0.65f);
         }
         ViewDataBinding binding = getLayoutBind();
         View view = binding.getRoot();
-        dialog.setContentView( view );
-        initView( binding );
-        initWindowParams( dialog );
+        dialog.setContentView(view);
+        initView(binding);
+        initWindowParams(dialog);
         return dialog;
     }
 
     public int getWindowWidth() {
-        return (Tools.getScreenWidth( getActivity() ) * 5 / 6);
+        return (Tools.getScreenWidth(getActivity()) * 5 / 6);
     }
 
     public int getScreenHeight() {
@@ -51,7 +54,7 @@ public abstract class CenterDialog extends DialogFragment {
     @Override
     public void show(FragmentManager manager, String tag) {
         try {
-            super.show( manager, tag );
+            super.show(manager, tag);
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
@@ -81,10 +84,9 @@ public abstract class CenterDialog extends DialogFragment {
         }
     }
 
-
     public ViewDataBinding getLayoutBind() {
-        return DataBindingUtil.inflate( getActivity().getLayoutInflater(), getLayoutId(), null
-                , false );
+        return DataBindingUtil.inflate(getActivity().getLayoutInflater(), getLayoutId(), null
+                , false);
     }
 
     public abstract int getLayoutId();
@@ -93,25 +95,46 @@ public abstract class CenterDialog extends DialogFragment {
 
 
     public void show(Object object) {
-        show( object, this.toString() );
+        show(object, this.toString());
     }
 
     public void show(Object object, String tag) {
+        FragmentManager manager = null;
         if (object instanceof Activity) {
-            FragmentManager manager = ((Activity) object).getFragmentManager();
+            manager = ((Activity) object).getFragmentManager();
             if (isAdded()) {
                 dismiss();
             }
-            super.show( manager, tag );
         } else if (object instanceof Fragment) {
-            FragmentManager fragmentManager = ((Fragment) object).getActivity().getFragmentManager();
+            manager = ((Fragment) object).getActivity().getFragmentManager();
             if (isAdded()) {
                 dismiss();
             }
-            super.show( fragmentManager, tag );
 
         }
+        try {
+            Field dismissed = DialogFragment.class.getDeclaredField("mDismissed");
+            dismissed.setAccessible(true);
+            dismissed.set(this, false);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        try {
+            Field shown = DialogFragment.class.getDeclaredField("mShownByMe");
+            shown.setAccessible(true);
+            shown.set(this, true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.add(this, tag);
+        ft.commitAllowingStateLoss();
     }
+
     public boolean isBottom() {
         return false;
     }

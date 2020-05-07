@@ -77,18 +77,20 @@ public class AddCodeActivity extends BaseActivity {
                 initPermission();
             }
         });
-        binding.tvAdd.setOnClickListener(new View.OnClickListener() {
+        binding.tvType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PaymentTypeDialog.newInstance(list).setOnClickListener(new PaymentTypeDialog.OnClickListener() {
                     @Override
                     public void Scrolled(String scrolled) {
                         mScrolled = scrolled;
-                        binding.tvAdd.setText("添加" + mScrolled + "二维码");
+                        binding.tvType.setText(mScrolled);
                         if (mScrolled.equals("支付宝")) {
-                            binding.tvPid.setText("PID值");
+                            binding.tvName.setText("姓名");
+                            binding.llPid.setVisibility(View.VISIBLE);
                         } else {
-                            binding.tvPid.setText("账号");
+                            binding.tvName.setText("昵称");
+                            binding.llPid.setVisibility(View.GONE);
                         }
                         for (PaymentsListBean.DataBean.ListBean listBean : bean.getData().getList()) {
                             if (listBean.getPaymentname().equals(mScrolled))
@@ -102,12 +104,8 @@ public class AddCodeActivity extends BaseActivity {
         binding.btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(binding.etName.getText().toString().trim())) {
+                if (TextUtils.isEmpty(binding.etNickName.getText().toString().trim())) {
                     ToastShow.s("请填写昵称");
-                    return;
-                }
-                if (TextUtils.isEmpty(binding.etPid.getText().toString().trim())) {
-                    ToastShow.s("请填写账号或PID");
                     return;
                 }
                 if (TextUtils.isEmpty(qrurl)) {
@@ -145,12 +143,16 @@ public class AddCodeActivity extends BaseActivity {
 
     }
 
-    /* 执行登录操作 */
     public void qrupload() {
+        if (TextUtils.isEmpty(payment_id)) {
+            ToastShow.s("二维码类型没选择");
+            return;
+        }
         Map<String, String> map = new HashMap<>();
         map.put("payment_id", payment_id);
         map.put("qrurl", qrurl);
-        map.put("nickname", binding.etName.getText().toString().trim());
+        map.put("alipay_name", binding.etNickName.getText().toString().trim());
+        map.put("alipay_account", binding.etAccount.getText().toString().trim());
         map.put("alipay_pid", binding.etPid.getText().toString().trim());
         mQueue.add(ParamTools.packParam(MyConst.qrupload, AddCodeActivity.this, this, this, map, Request.Method.POST));
         showLoadDialog();

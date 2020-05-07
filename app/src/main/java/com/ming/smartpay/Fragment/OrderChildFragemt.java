@@ -8,12 +8,14 @@ import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.container.DefaultHeader;
 import com.liaoinstan.springview.widget.SpringView;
 import com.ming.smartpay.R;
 import com.ming.smartpay.activity.ChangeLoginPasswordActivity;
 import com.ming.smartpay.activity.ChangePayPasswordActivity;
+import com.ming.smartpay.activity.OrderDetailsActivity;
 import com.ming.smartpay.adapter.OrderAdapter;
 import com.ming.smartpay.base.fragment.BaseFragment;
 import com.ming.smartpay.base.widget.ToastShow;
@@ -22,6 +24,7 @@ import com.ming.smartpay.bean.OrderBean;
 import com.ming.smartpay.config.MyConst;
 import com.ming.smartpay.databinding.FragemtMyBinding;
 import com.ming.smartpay.databinding.FragemtOrderChildBinding;
+import com.ming.smartpay.dialogfrment.OrderDialog;
 import com.ming.smartpay.dialogfrment.VersionUpgradeDialog;
 import com.ming.smartpay.utils.ParamTools;
 
@@ -29,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ming.smartpay.config.MyConst.confirm;
 
 public class OrderChildFragemt extends BaseFragment {
     private FragemtOrderChildBinding binding;
@@ -93,9 +98,9 @@ public class OrderChildFragemt extends BaseFragment {
     @Override
     public void initData() {
         if (getArguments().getInt("type") == 1) {
-            getstatistics();
-        } else {
             getunfinishedlist();
+        } else {
+            getstatistics();
         }
 
     }
@@ -117,12 +122,19 @@ public class OrderChildFragemt extends BaseFragment {
         mQueue.add(ParamTools.packParam(MyConst.getunfinishedlist, getActivity(), this, this, map, Request.Method.POST));
         showLoadDialog();
     }
+    public void confirm(String amount, String order_no) {
+        Map<String, String> map = new HashMap<>();
+        map.put("amount", amount);
+        map.put("order_no", order_no);
+        mQueue.add(ParamTools.packParam(MyConst.confirm, getActivity(), this, this, map, Request.Method.POST));
+        showLoadDialog();
+    }
 
     @Override
     public void returnData(String data, String url) {
         if (url.contains(MyConst.getorderslist) || url.contains(MyConst.getunfinishedlist)) {
             binding.springView.onFinishFreshAndLoad();
-            MianOrderBean orderBean = JSON.parseObject(data, MianOrderBean.class);
+            final MianOrderBean orderBean = JSON.parseObject(data, MianOrderBean.class);
             if (orderAdapter == null) {
                 beanList = orderBean.getData().getList();
                 orderAdapter = new OrderAdapter(beanList);
@@ -141,6 +153,27 @@ public class OrderChildFragemt extends BaseFragment {
             } else {
                 isPage = true;
             }
+            orderAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    OrderBean obean = orderBean.getData().getList().get(position);
+                    if (obean.getStatus() == 1) {
+                        OrderDialog.newInstance(obean.getId() + "", obean.getOrder_no(), obean.getAmount(), obean.getPaymentname(), obean.getCreated_time())
+                                .setOnClickListener(new OrderDialog.OnClickListener() {
+                                    @Override
+                                    public void toAccount(String amount, String order_no) {
+                                        confirm(amount, order_no);
+                                    }
+                                }).show(getActivity());
+                    } else if (orderBean.getData().getList().get(position).getStatus() == 3) {
+                        Intent intent = new Intent(getActivity(), OrderDetailsActivity.class);
+                        intent.putExtra("id", obean.getId() + "");
+                        startActivity(intent);
+                    }
+                }
+            });
+        } else if (url.contains(MyConst.confirm)) {
+            initData();
         }
     }
 }

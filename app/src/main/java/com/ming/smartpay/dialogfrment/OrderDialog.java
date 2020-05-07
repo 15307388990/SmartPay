@@ -1,8 +1,12 @@
 package com.ming.smartpay.dialogfrment;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.ming.smartpay.R;
@@ -24,12 +28,39 @@ public class OrderDialog extends CenterDialog {
      * 定义结果回调接口
      */
     public interface OnClickListener {
-        void toAccount(String amount, String id);
+        void toAccount(String amount, String order_no);
 
 
     }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = new Dialog(getActivity(), R.style.DialogStyle);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setDimAmount(0.65f);
+        }
+        ViewDataBinding binding = getLayoutBind();
+        View view = binding.getRoot();
+        dialog.setContentView(view);
+        initView(binding);
+        initWindowParams(dialog);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        return dialog;
+    }
+
     public OrderDialog setOnClickListener(OnClickListener onClickListener) {
+
         this.onClickListener = onClickListener;
         return this;
     }
@@ -64,7 +95,7 @@ public class OrderDialog extends CenterDialog {
             @Override
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(binding.etAmount.getText().toString().trim())) {
-                    onClickListener.toAccount(binding.etAmount.getText().toString().trim(), bundle.getString("id"));
+                    onClickListener.toAccount(binding.etAmount.getText().toString().trim(), bundle.getString("order_no"));
                     dismiss();
                 } else {
                     ToastShow.s("请输入金额");

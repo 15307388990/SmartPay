@@ -24,7 +24,9 @@ public class OrderAdapter extends BaseQuickAdapter<OrderBean, BaseViewHolder> {
         baseViewHolder.setText(R.id.tv_amount, "￥" + orderBean.getAmount())
                 .setText(R.id.tv_order_no, "订单号：" + orderBean.getOrder_no())
                 .setText(R.id.tv_created_time, "订单时间：" + orderBean.getCreated_time())
-                .setText(R.id.tv_paymentname, "支付方式：" + orderBean.getPaymentname());
+                .setText(R.id.tv_paymentname, "支付方式：" + orderBean.getPaymentname())
+                .setText(R.id.tv_qr_id, "二维码编号：" + orderBean.getQr_id())
+                .setText(R.id.tv_qr_name, "二维码姓名：" + orderBean.getQr_name());
         //【0：未返款 1：已返款待审核 2.已返款异常 3.已返款成功】
         String status = "";
         switch (orderBean.getWithdraws_status()) {

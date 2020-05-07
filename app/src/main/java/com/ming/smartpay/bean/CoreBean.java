@@ -42,10 +42,28 @@ public class CoreBean extends BaseBean {
 
             private int id;
             private String qr_name;
+            private String qr_pid;
+            private String qr_account;
             private String paymentname;
             private String created_time;
             private int examine;
             private boolean status;
+
+            public String getQr_pid() {
+                return qr_pid;
+            }
+
+            public void setQr_pid(String qr_pid) {
+                this.qr_pid = qr_pid;
+            }
+
+            public String getQr_account() {
+                return qr_account;
+            }
+
+            public void setQr_account(String qr_account) {
+                this.qr_account = qr_account;
+            }
 
             public int getId() {
                 return id;

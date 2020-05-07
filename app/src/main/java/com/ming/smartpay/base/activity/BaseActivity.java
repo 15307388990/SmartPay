@@ -26,6 +26,7 @@ import com.ming.smartpay.config.MyConst;
 import com.ming.smartpay.dialogfrment.OrderDialog;
 import com.ming.smartpay.utils.ParamTools;
 import com.ming.smartpay.utils.SavePreferencesData;
+import com.ming.smartpay.utils.Tools;
 import com.ming.smartpay.ws.WsManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -140,24 +141,32 @@ public abstract class BaseActivity extends BasePermissionAty implements Response
     public void onTextMessage(String text) {
         LongChainBean bean = JSON.parseObject(text, LongChainBean.class);
         if (bean.getType().equals("orders")) {
+            Tools.order(BaseActivity.this);
+            isNotice();
             OrderDialog.newInstance(bean.getId(), bean.getOrder_no(), bean.getAmount(), bean.getPayment_name(), bean.getCreated_time())
                     .setOnClickListener(new OrderDialog.OnClickListener() {
                         @Override
-                        public void toAccount(String amount, String id) {
-                            confirm(amount, id);
+                        public void toAccount(String amount, String order_no) {
+                            confirm(amount, order_no);
                         }
                     }).show(BaseActivity.this);
         }
     }
 
-    //接受排队
-    public void confirm(String amount, String id) {
+    public void confirm(String amount, String order_no) {
         Map<String, String> map = new HashMap<>();
         map.put("amount", amount);
-        map.put("id", id);
+        map.put("order_no", order_no);
         mQueue.add(ParamTools.packParam(MyConst.confirm, BaseActivity.this, this, this, map, Request.Method.POST));
         showLoadDialog();
     }
+
+    public void isNotice() {
+        Map<String, String> map = new HashMap<>();
+        mQueue.add(ParamTools.packParam(MyConst.is_notice, BaseActivity.this, this, this, map, Request.Method.POST));
+        showLoadDialog();
+    }
+
 
     @Override
     public void onDisconnected() {

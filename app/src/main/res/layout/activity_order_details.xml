@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/title_bar" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="25dp"
+            android:text="请使用银行APP转账，并填写相应附言"
+            android:textColor="#ff333333"
+            android:textSize="17sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="15dp"
+            android:background="#eeeeee" />
+
+        <TextView
+            android:id="@+id/tv_order_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:text="订单号："
+            android:textColor="#ff626262"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="12dp"
+            android:background="#eeeeee" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="返款详情"
+            android:textColor="#ff333333"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="14.5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="银行："
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_branch_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn1"
+                android:layout_width="43dp"
+                android:layout_height="19dp"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/bg_shape_ee_4"
+                android:gravity="center"
+                android:text="复制"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="14.5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="卡号："
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_bank_card_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn2"
+                android:layout_width="43dp"
+                android:layout_height="19dp"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/bg_shape_ee_4"
+                android:gravity="center"
+                android:text="复制"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="14.5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="姓名："
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn3"
+                android:layout_width="43dp"
+                android:layout_height="19dp"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/bg_shape_ee_4"
+                android:gravity="center"
+                android:text="复制"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="14.5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="转账："
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_return_amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn4"
+                android:layout_width="43dp"
+                android:layout_height="19dp"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/bg_shape_ee_4"
+                android:gravity="center"
+                android:text="复制"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="14.5dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="备注(附言信息)："
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_order_mk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#ff626262"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn5"
+                android:layout_width="43dp"
+                android:layout_height="19dp"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/bg_shape_ee_4"
+                android:gravity="center"
+                android:text="复制"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="15dp"
+            android:background="#eeeeee" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="订单详情"
+            android:textColor="#ff333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="到账："
+            android:textColor="#ff626262"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_minersamount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="收入：0.00"
+            android:textColor="#ff626262"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="时间："
+            android:textColor="#ff626262"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_phone_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="12dp"
+            android:text="码号："
+            android:textColor="#ff626262"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/btn_ok"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/bg_shape_50"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="确认返款"
+            android:textColor="#ffffffff"
+            android:textSize="16sp" />
+    </LinearLayout>
+</layout>

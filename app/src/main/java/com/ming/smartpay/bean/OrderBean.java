@@ -12,6 +12,24 @@ public class OrderBean {
     private int status;
     private String order_no;
     private String created_time;
+    private String qr_id;
+    private String qr_name;
+
+    public String getQr_id() {
+        return qr_id;
+    }
+
+    public void setQr_id(String qr_id) {
+        this.qr_id = qr_id;
+    }
+
+    public String getQr_name() {
+        return qr_name;
+    }
+
+    public void setQr_name(String qr_name) {
+        this.qr_name = qr_name;
+    }
 
     public int getId() {
         return id;
@@ -29,13 +47,6 @@ public class OrderBean {
         this.paymentname = paymentname;
     }
 
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
 
     public int getWithdraws_status() {
         return withdraws_status;
@@ -44,7 +55,13 @@ public class OrderBean {
     public void setWithdraws_status(int withdraws_status) {
         this.withdraws_status = withdraws_status;
     }
+    public String getAmount() {
+        return amount;
+    }
 
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
     public int getStatus() {
         return status;
     }

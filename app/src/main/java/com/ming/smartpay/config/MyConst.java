@@ -16,7 +16,7 @@ public class MyConst {
     /**
      * 主地址
      */
-    public static final String BASE_URL = "http://47.75.5.205";
+    public static final String BASE_URL = "http://47.57.19.48:80";
 
     /**
      * 登录
@@ -52,7 +52,7 @@ public class MyConst {
      */
     public static final String binduid = "/api/service/binduid";
     /**
-     * 绑定长链
+     * 确认到账
      */
     public static final String confirm = "/api/home/confirm";
     /**
@@ -108,6 +108,21 @@ public class MyConst {
      * 检查版本
      */
     public static final String version = "/api/version";
-
+    /**
+     * 获取订单详情
+     */
+    public static final String getdetails = "/api/home/getdetails";
+    /**
+     * 确认返款
+     */
+    public static final String confirmrefunds = "/api/home/confirmrefunds";
+    /**
+     * 判断是否已接受
+     */
+    public static final String is_accept = "/api/home/is_accept";
+    /**
+     * 检测推送订单（是否接收成功）
+     */
+    public static final String is_notice = "/api/home/is_notice";
 
 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.ming.smartpay.R;
 import com.ming.smartpay.adapter.OrderAdapter;
 import com.ming.smartpay.base.activity.BaseActivity;
@@ -28,6 +29,7 @@ import com.ming.smartpay.bean.PaymentsListBean;
 import com.ming.smartpay.config.MyConst;
 import com.ming.smartpay.databinding.ActivityAddCodeBinding;
 import com.ming.smartpay.databinding.ActivitySearchOrderBinding;
+import com.ming.smartpay.dialogfrment.OrderDialog;
 import com.ming.smartpay.dialogfrment.PaymentTypeDialog;
 import com.ming.smartpay.utils.ParamTools;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -94,13 +96,13 @@ public class SearchOrderActivity extends BaseActivity {
     @Override
     protected void returnData(String data, String url) {
         if (url.contains(MyConst.searchorder)) {
-            MianOrderBean orderBean = JSON.parseObject(data, MianOrderBean.class);
+            final MianOrderBean orderBean = JSON.parseObject(data, MianOrderBean.class);
             if (orderBean.getData() == null) {
                 binding.tvEmpty.setVisibility(View.VISIBLE);
-                binding.recycleView.setVisibility(View.GONE);
+                //binding.recycleView.setVisibility(View.GONE);
             } else {
                 binding.tvEmpty.setVisibility(View.GONE);
-                binding.recycleView.setVisibility(View.VISIBLE);
+               // binding.recycleView.setVisibility(View.VISIBLE);
                 if (orderAdapter == null) {
                     orderAdapter = new OrderAdapter(orderBean.getData().getList());
                     binding.recycleView.setLayoutManager(new LinearLayoutManager(SearchOrderActivity.this));
@@ -108,12 +110,32 @@ public class SearchOrderActivity extends BaseActivity {
                 } else {
                     orderAdapter.setNewData(orderBean.getData().getList());
                 }
+                orderAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        OrderBean obean = orderBean.getData().getList().get(position);
+                        if (obean.getStatus() == 1) {
+                            OrderDialog.newInstance(obean.getId() + "", obean.getOrder_no(), obean.getAmount(), obean.getPaymentname(), obean.getCreated_time())
+                                    .setOnClickListener(new OrderDialog.OnClickListener() {
+                                        @Override
+                                        public void toAccount(String amount, String order_no) {
+                                            confirm(amount, order_no);
+                                        }
+                                    }).show(SearchOrderActivity.this);
+                        } else if (orderBean.getData().getList().get(position).getStatus() == 3) {
+                            Intent intent = new Intent(SearchOrderActivity.this, OrderDetailsActivity.class);
+                            intent.putExtra("id", obean.getId() + "");
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
+        }else if (url.contains(MyConst.confirm)) {
+            searchorder();
         }
 
     }
 
-    /* 执行登录操作 */
     public void searchorder() {
         Map<String, String> map = new HashMap<>();
         map.put("order_no", binding.etSearch.getText().toString().trim());
@@ -135,4 +157,12 @@ public class SearchOrderActivity extends BaseActivity {
             inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+    public void confirm(String amount, String order_no) {
+        Map<String, String> map = new HashMap<>();
+        map.put("amount", amount);
+        map.put("order_no", order_no);
+        mQueue.add(ParamTools.packParam(MyConst.confirm, SearchOrderActivity.this, this, this, map, Request.Method.POST));
+        showLoadDialog();
+    }
+
 }

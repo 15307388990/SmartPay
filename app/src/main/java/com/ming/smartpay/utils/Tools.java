@@ -10,8 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -24,6 +28,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+
+import com.ming.smartpay.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +53,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.content.Context.TELEPHONY_SERVICE;
+import static com.ming.smartpay.base.utils.AppUtils.getAssets;
 
 /**
  * @author WuJianHua 工具类
@@ -563,6 +570,18 @@ public class Tools {
             e.printStackTrace();
         }
         return code;
+    }
+
+    public static void jieshou(Context mContext) {//上下文
+        //需将资源文件放在assets文件夹
+        MediaPlayer mMediaPlayer = MediaPlayer.create(mContext, R.raw.jieshou);
+        mMediaPlayer.start();
+    }
+
+    public static void order(Context mContext) {//上下文
+        //需将资源文件放在assets文件夹
+        MediaPlayer mMediaPlayer = MediaPlayer.create(mContext, R.raw.order);
+        mMediaPlayer.start();
     }
 
     /**

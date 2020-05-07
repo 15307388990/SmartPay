@@ -122,7 +122,7 @@ public class MyFragemt extends BaseFragment {
             binding.handlingFeeBalance.setText("额度：" + bean.getData().getHandlingFeeBalance());
             ArrayList<String> strings = new ArrayList<>();
             for (UserInfoBean.DataBean.ListBean listBean : bean.getData().getList()) {
-                strings.add(listBean.getPaymentname() + "：" + Double.valueOf(listBean.getRate()) * 100 + "%");
+                strings.add(listBean.getPaymentname() + "：" + Double.valueOf(listBean.getRate()) + "%");
             }
             if (myAdapter == null) {
                 myAdapter = new MyAdapter(strings);
@@ -136,7 +136,7 @@ public class MyFragemt extends BaseFragment {
             Tools.jump(getActivity(), LoginActivity.class, true);
 
         } else if (url.contains(MyConst.version)) {
-            VersionBean bean=JSON.parseObject(data,VersionBean.class);
+            VersionBean bean = JSON.parseObject(data, VersionBean.class);
             VersionUpgradeDialog.newInstance(bean).show(getActivity());
         }
     }
